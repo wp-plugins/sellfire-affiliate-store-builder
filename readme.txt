@@ -12,7 +12,7 @@ SellFire's Store Builder makes it easy to earn money as an affiliate. Integrated
 
 The SellFire Affiliate Store Builder Plugin gives affiliates an easy way to add product advertisements into their blog. You can use SellFire to search nearly 30 million product advertisements and create custom advertisement displays to add to your blog entry. All product links already have your affiliate IDs embedded into them.
  
-SellFire has integrated with the largest affiliate networks in the world. We have products from thousands of merchants. When you use SellFire, you do not need to download or import large data feed files or use a different tool for each affiliate network. You simply use SellFire.
+[SellFire](http://www.sellfire.com "Affiliate Store Builder") has integrated with the largest affiliate networks in the world. We have products from thousands of merchants. When you use SellFire, you do not need to download or import large data feed files or use a different tool for each affiliate network. You simply use SellFire.
 
 We currently work with:
 
@@ -22,6 +22,13 @@ We currently work with:
 * PeperJam
 * ShareASale
 * Amazon
+
+== Installation ==
+To install the plugin, follow these steps:
+
+1. Unzip the zip archive to the `/wp-content/plugins/` directory
+1. Activate the plugin through the 'Plugins' menu in WordPress
+1. Add your SellFire Account API Key
 
 == Frequently Asked Questions ==
 
@@ -34,25 +41,6 @@ To use the WordPress plug in, you will need:
 
 =How much does the plug in cost=
 The WordPress plug in is free and licensed as open source software. If you are a developer, feel free to modify, extend and redistribute it. For the plugin to work, it must be linked to a SellFire account. You can sign up for SellFire for free at sellfire.com
-
-== Installation ==
-This section describes how to install the plugin and get it working.
-
-e.g.
-
-1. Unzip the zip archive to the `/wp-content/plugins/` directory
-1. Activate the plugin through the 'Plugins' menu in WordPress
-1. Add your SellFire Account API Key
-
-== Frequently Asked Questions ==
-
-= A question that someone might have =
-
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
 
 == Screenshots ==
 
