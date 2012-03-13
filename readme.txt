@@ -32,14 +32,14 @@ To install the plugin, follow these steps:
 
 == Frequently Asked Questions ==
 
-=What do I need to use the plug in?=
+= What do I need to use the plug in? =
 To use the WordPress plug in, you will need:
 
 * A SellFire account
 * A web site running WordPress version 3.0 or higher
 * An affiliate account on one or more of our [network partners](http://www.sellfire.com/Networks "SellFire Affiliate Network Partners")
 
-=How much does the plug in cost=
+= How much does the plug in cost? =
 The WordPress plug in is free and licensed as open source software. If you are a developer, feel free to modify, extend and redistribute it. For the plugin to work, it must be linked to a SellFire account. You can sign up for SellFire for free at sellfire.com
 
 == Screenshots ==
