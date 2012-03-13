@@ -161,7 +161,7 @@ function jem_sf_settings() {
  * Description of the authentication section
  */
 function jem_sf_auth_section_text() {
-    echo("To use the SellFire Plugin, you need to enter your API key. This can be found in your SellFire.com account page");
+    echo("To use the SellFire Plugin, you need to enter your API key. This can be found in your <a href='http://www.SellFire.com'>SellFire.com</a> account page. If you don't have a SellFire account, you can register for free.");
 }
 
 /*
