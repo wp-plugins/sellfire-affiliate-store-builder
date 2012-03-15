@@ -229,4 +229,3 @@ function jem_sf_get_ajax_url()
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
     return admin_url('admin-ajax.php', $protocol);
 }
-?>

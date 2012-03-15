@@ -26,5 +26,3 @@ function jem_sf_meta_render() {
     }    
     include ( 'post-meta-html.php' );
 }
-
-?>
