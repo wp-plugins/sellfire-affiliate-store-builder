@@ -13,6 +13,9 @@ add_action('add_meta_boxes', 'jem_sf_create_metabox');
 function jem_sf_create_metabox() {
     add_meta_box('sellfire-meta', 'SellFire Affiliate Plugin', 
             'jem_sf_meta_render', 'post', 'normal', 'high');    
+    
+    add_meta_box('sellfire-meta', 'SellFire Affiliate Plugin', 
+            'jem_sf_meta_render', 'page', 'normal', 'high');
 }
 
 /*

@@ -4,7 +4,7 @@ Donate link: http://www.sellfire.com/
 Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, 
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.1
+Stable tag: 1.2
 
 SellFire's Store Builder makes it easy to earn money as an affiliate. Integrated with all of the biggest networks and thousands of merchants.
 
@@ -57,3 +57,6 @@ The WordPress plug in is free and licensed as open source software. If you are a
 
 = 1.1 =
 * Fixed page header bug
+
+= 1.2 =
+* Added meta box to Page Editor 
