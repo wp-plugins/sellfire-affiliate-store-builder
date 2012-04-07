@@ -179,9 +179,15 @@ function jem_sf_api_key_input() {
  */
 function jem_sf_validate_options( $input ) {    
     $api_key = $input['api_key'];
-    $url = JEM_SF_API_URL . 'ValidApiKey?apiKey=' . $api_key;
-    $params = array("sslverify" => false);
-    $response = wp_remote_get($url, $params);
+    $site_url = get_home_url();    
+    $site_name = get_bloginfo( 'name' );
+    $url = JEM_SF_API_URL . 'ValidApiKey';
+    $post_values = array();
+    $post_values['apiKey'] = $api_key;
+    $post_values['siteUrl'] = $site_url;
+    $post_values['siteName'] = $site_name;
+    $params = array('sslverify' => false, 'body' => $post_values);    
+    $response = wp_remote_post($url, $params);
     $content = wp_remote_retrieve_body(&$response);
     if ($content != "true")
     {
