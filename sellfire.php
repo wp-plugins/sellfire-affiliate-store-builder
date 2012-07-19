@@ -153,7 +153,7 @@ function jem_sf_settings() {
     add_settings_section('jem_sf_auth_section', 'Authentication Settings', 'jem_sf_auth_section_text', 'jem_sf_settings');
 
     //add api key setting
-    add_settings_field('jem_sf_api_key', 'Your SellFire API key', 'jem_sf_api_key_input', 'jem_sf_settings', 'jem_sf_auth_section'); 
+    add_settings_field('jem_sf_api_key', 'Your SellFire WordPress Key', 'jem_sf_api_key_input', 'jem_sf_settings', 'jem_sf_auth_section'); 
 
     include('includes/options-page.php');
 }
@@ -162,7 +162,7 @@ function jem_sf_settings() {
  * Description of the authentication section
  */
 function jem_sf_auth_section_text() {
-    echo("To use the SellFire Plugin, you need to enter your API key. This can be found in your <a href='http://www.SellFire.com'>SellFire.com</a> account page. If you don't have a SellFire account, you can register for free.");
+echo "To use the SellFire Plugin, you need to enter your API key. This can be found in your <a href='https://www.sellfire.com/MyAccount/DataApiAccount'>SellFire.com</a> account page. If you don't have a SellFire account, you can register for <strong>free</strong>.";
 }
 
 /*
@@ -171,7 +171,15 @@ function jem_sf_auth_section_text() {
 function jem_sf_api_key_input() {
     $options = get_option( 'jem_sf_options' );
     echo "<input id='api_key' style='width: 400px;' name='jem_sf_options[api_key]' type='text' value='{$options['api_key']}'/>";
-    echo "<div><a target='_SELLFIRE' href='https://www.sellfire.com/MyAccount/DataApiAccount'>Find my API Key</a></div>";
+    echo "<div><a target='_SELLFIRE' href='https://www.sellfire.com/MyAccount/DataApiAccount'>Find my WordPress Key</a></div>";
+    echo "<h3>How to use this plugin</h3>";
+    echo "<p>Once you've added your WordPress key to the plugin it is very simple to use.</p>";
+    echo "<ul class='ul-disc'>";
+    echo "<li>Log into your SellFire account and create a new store. Creating an account is <strong>free</strong> and requires only an email address.</li>";
+    echo "<li>On your blog, create a new post or page. You can also edit an existing one. Underneath the page/post editor there will be a widget titled 'SellFire Affiliate Store Builder'. Use that widget to add your store to your post or page</li>";
+    echo "<li>Want to have multiple product categories on your site? Just create a new store per category and add it to a different page.</li>";
+    echo "</ul>";
+	
 }
 
 /*
