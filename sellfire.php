@@ -2,7 +2,7 @@
 
 /*
  * Plugin Name: SellFire Affiliate Store Builder
- * Plugin URI: http://www.sellfiredev.com/Features/AffiliateWordPressPlugin
+ * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products into their blog. 
  * Author: Jason MacInnes
  * Version: 1.2
