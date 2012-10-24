@@ -6,7 +6,7 @@ Requires at least: 3.0
 Tested up to: 3.4.2
 Stable tag: 2.0
 
-SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with all of the biggest networks and thousands of merchants.
+SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
 == Description ==
 
