@@ -34,16 +34,16 @@ add_action( 'admin_init', 'jem_sf_redirect' );
 add_shortcode( 'sellfire', 'jem_sf_sellfire_shortcode' );
 
 //SF Domain
-define ( 'JEM_SF_DOMAIN', 'http://www.sellfiredev.com:81' );
+define ( 'JEM_SF_DOMAIN', 'http://www.sellfire.com' );
 
 //SF API Domain
-define ( 'JEM_SF_API_DOMAIN', 'http://www.sellfiredev.com:81' );
+define ( 'JEM_SF_API_DOMAIN', 'https://www.sellfire.com' );
 
 //url of the SF API 
 define( 'JEM_SF_API_URL', JEM_SF_API_DOMAIN . '/Api/' );
 
 //url of the SF WordPress Controller 
-define( 'JEM_SF_WP_URL', JEM_SF_API_DOMAIN . '/WordPress/' );
+define( 'JEM_SF_WP_URL', JEM_SF_DOMAIN . '/WordPress/' );
 
 //define a constant to the JS directory
 define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
