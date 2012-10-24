@@ -9,7 +9,7 @@
     <script type="text/javascript">
         pageHeight  = jQuery(document).height();
         new easyXDM.Socket({            
-            remote: "http://www.sellfiredev.com:81/WordPress/OuterFrame?url=<?php echo($url) . urlencode("?RRFilter=disabled&sfSiteId=" . $siteId) ?>&pageHeight=" + pageHeight,
+            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?url=<?php echo($url) . urlencode("?RRFilter=disabled&sfSiteId=" . $siteId) ?>&pageHeight=" + pageHeight,
             container: document.getElementById("sfContainer"),
             onMessage: function (message, origin)
             {      
