@@ -1,17 +1,67 @@
+    <?php
+        $url = urlencode($url);
+        $siteId = jem_sf_getSiteId();
+        $admin_page = get_admin_url();
+    ?>
 
-<div class="wrap">
-    <?php screen_icon() ?>
-    <h2>SellFire Affiliate Plugin</h2>
-    <p>
-        The SellFire affiliate plug-in allows you to quickly embed affiliate
-        stores into your blog.
-    </p>
-    <form action="options.php" method="post">
-        <?php
-        settings_fields('jem_sf_options');
-        do_settings_sections('jem_sf_settings');
-        ?>
-        <br/>
-        <input name="Submit" type="submit" value="Save Changes" class="button-primary"/>        
+    <div id="sfContainer">
+    </div>
+    <script type="text/javascript">
+        pageHeight  = jQuery(document).height();
+        new easyXDM.Socket({            
+            remote: "http://www.sellfiredev.com:81/WordPress/OuterFrame?url=<?php echo($url) . urlencode("?RRFilter=disabled&sfSiteId=" . $siteId) ?>&pageHeight=" + pageHeight,
+            container: document.getElementById("sfContainer"),
+            onMessage: function (message, origin)
+            {      
+                message = jQuery.parseJSON(message);
+                if (message.messageType == 'PageHeight')
+                {
+                    setFrameHeight(message.data);
+                }
+                else if (message.messageType == 'CompleteStore')
+                {
+                    redirectToPage(message.data);
+                }                      
+                else if (message.messageType == 'ApiKey')
+                {
+                    setApiKey(message.data);
+                }                
+            }                                  
+        });
+        
+        function setFrameHeight(height)
+        {
+            var jElement = jQuery("iframe");
+            var frameHeight = height;
+            var sfMinHeight = window.document.body.scrollHeight - jElement.offset().top - 20;
+            if (frameHeight < sfMinHeight)
+            {
+                frameHeight = sfMinHeight;
+            }
+            jElement.height(frameHeight);
+            //this.container.getElementsByTagName("iframe")[0].style.height = frameHeight + "px";
+            jElement.css("visibility", "visible"); 
+            window.scrollTo(0, 0);
+        }
+        
+        function redirectToPage(data)
+        {
+            jQuery("#jemSfStoreId").val(data.storeId);
+            jQuery("#jemSfStoreName").val(data.storeName);
+            jQuery("#frmSendToEdit").submit();            
+        }
+        
+        function setApiKey(key)
+        {
+            jQuery.get(jem_sf.ajaxurl, {action: 'jem_sf_set_api_key', apiKey: key}, null);
+        }
+        
+    </script>
+
+    <form method="get" action="<?php echo($admin_page) ?>" id="frmSendToEdit">
+        
+        <input type="hidden" name="jemSfStoreId" value="" id="jemSfStoreId">
+        <input type="hidden" name="jemSfStoreName" value="" id="jemSfStoreName">
+        <input type="hidden" name="jemSfEditPage" value="1">
+        
     </form>
-</div>

@@ -20,6 +20,13 @@ add_action( 'admin_init', 'jem_sf_register_settings' );
 //registers the cache flush ajax handler
 add_action ( 'wp_ajax_jem_sf_flush_cache', 'jem_sf_flush_cache' );
 
+//registers the set api key
+add_action ( 'wp_ajax_jem_sf_set_api_key', 'jem_sf_set_api_key' );
+
+//registers the redirect that looks up a page for a store and redirects to the 
+//edit page
+add_action( 'admin_init', 'jem_sf_redirect' );
+
 //strips out store tags
 //add_filter( 'the_content', 'jem_sf_replace_store_tags' );
 
@@ -27,13 +34,16 @@ add_action ( 'wp_ajax_jem_sf_flush_cache', 'jem_sf_flush_cache' );
 add_shortcode( 'sellfire', 'jem_sf_sellfire_shortcode' );
 
 //SF Domain
-define ( 'JEM_SF_DOMAIN', 'http://www.sellfire.com' );
+define ( 'JEM_SF_DOMAIN', 'http://www.sellfiredev.com:81' );
 
 //SF API Domain
-define ( 'JEM_SF_API_DOMAIN', 'https://www.sellfire.com' );
+define ( 'JEM_SF_API_DOMAIN', 'http://www.sellfiredev.com:81' );
 
 //url of the SF API 
 define( 'JEM_SF_API_URL', JEM_SF_API_DOMAIN . '/Api/' );
+
+//url of the SF WordPress Controller 
+define( 'JEM_SF_WP_URL', JEM_SF_API_DOMAIN . '/WordPress/' );
 
 //define a constant to the JS directory
 define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
@@ -126,9 +136,17 @@ function jem_sf_preg_escape_back($string) {
  * Adds the appropriate menu's to the wordpress admin page
  */
 function jem_sf_add_menus() {
-    add_options_page( 'SellFire Plugin Settings', 'SellFire', 'manage_options', __FILE__, 'jem_sf_settings' );        
+    add_menu_page( 'SellFire Affiliate Store Builder Plugin', 'SellFire', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview', plugins_url('/images/sf-icon.jpg', __FILE__));        
+    add_submenu_page ('jem_sf_sellfire', 'SellFire Plugin', 'General', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview' );
+    add_submenu_page ('jem_sf_sellfire', 'Networks', 'Networks', 'manage_options', 'jem_sf_sellfire_networks', 'jem_sf_networks' );
+    add_submenu_page ('jem_sf_sellfire', 'Merchants', 'Merchants', 'manage_options', 'jem_sf_sellfire_merchants', 'jem_sf_merchants' );
+    add_submenu_page ('jem_sf_sellfire', 'Store Categories', 'Categories', 'manage_options', 'jem_sf_sellfire_categories', 'jem_sf_categories' );
+    add_submenu_page ('jem_sf_sellfire', 'Store Widgets', 'Widgets', 'manage_options', 'jem_sf_sellfire_widgets', 'jem_sf_widgets' );
+    add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );    
+        
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js' );
+    wp_enqueue_script( 'jem_sf_jseasyXDM', JEM_SF_INSERTJS . '/easyXDM/easyXDM.min.js' );
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
     $params = array(
         "ajaxurl" => admin_url('admin-ajax.php', $protocol));
@@ -145,16 +163,98 @@ function jem_sf_register_settings() {
     register_setting('jem_sf_options', 'jem_sf_options', 'jem_sf_validate_options');
 }
 
+/* 
+ * Draws the settings page
+ */
+function jem_sf_store_theme() {
+    $url  = '/WordPress/Themes';
+    include('includes/options-page.php');
+}
+
 /*
  * Draws the settings page
  */
 function jem_sf_settings() {
-    //add section for settings
-    add_settings_section('jem_sf_auth_section', 'Authentication Settings', 'jem_sf_auth_section_text', 'jem_sf_settings');
+    $url  = '/WordPress/Merchants';
+    include('includes/options-page.php');
+}
 
-    //add api key setting
-    add_settings_field('jem_sf_api_key', 'Your SellFire WordPress Key', 'jem_sf_api_key_input', 'jem_sf_settings', 'jem_sf_auth_section'); 
+/*
+ * Draws the categories page
+ */
+function jem_sf_categories() {
+    $url  = '/WordPress/Categories';
+    include('includes/options-page.php');
+}
 
+/*
+ * Draws the widgets page
+ */
+function jem_sf_widgets() {
+    $url  = '/WordPress/Widgets';
+    include('includes/options-page.php');
+}
+
+/*
+ * Draws the merchants page
+ */
+function jem_sf_merchants() {  
+    $url = '/WordPress/Merchants';
+    include('includes/options-page.php');
+}
+
+/*
+ * Draws the merchants page
+ */
+function jem_sf_site_overview() {  
+    $url = '/WordPress/SiteOverview';
+    include('includes/options-page.php');
+}
+
+/*
+ * Creates a new SellFire account if needed
+ */
+function jem_sf_getSiteId() {
+    $options = get_option( 'jem_sf_options' );    
+    $siteId = null;
+    if ($options == null) {
+        $options = array();        
+    } else {
+        $siteId = $options['site_id'];        
+    }    
+
+    /*
+    $options['site_id']=null;
+    $options['api_key']=null;
+    $siteId = null;      
+     */            
+      
+    if ($siteId == null || $siteId == '') {
+        
+        $site_url = get_home_url();    
+        $site_name = get_bloginfo( 'name' );
+        $url = JEM_SF_WP_URL . 'CreateAccount';
+        $post_values = array();
+        $post_values['siteUrl'] = urlencode($site_url);
+        $post_values['siteName'] = urlencode($site_name);
+        $post_values['apiKey'] = $options['api_key'] == null ? '' : $options['api_key'];
+        $params = array('sslverify' => false, 'body' => $post_values);    
+        $response = wp_remote_post($url, $params);    
+        $result = json_decode( wp_remote_retrieve_body(&$response) );
+        $options['api_key'] = $result->ApiKey;
+        $options['site_id'] = $result->SiteId;
+        $siteId = $result->SiteId;
+        update_option('jem_sf_options', $options);
+    }
+    
+    return $siteId;
+}
+
+/*
+ * Draws the networks page
+ */
+function jem_sf_networks() {
+    $url = '/WordPress/Networks';
     include('includes/options-page.php');
 }
 
@@ -162,7 +262,7 @@ function jem_sf_settings() {
  * Description of the authentication section
  */
 function jem_sf_auth_section_text() {
-echo "To use the SellFire Plugin, you need to enter your API key. This can be found in your <a href='https://www.sellfire.com/MyAccount/DataApiAccount'>SellFire.com</a> account page. If you don't have a SellFire account, you can register for <strong>free</strong>.";
+    echo("To use the SellFire Plugin, you need to enter your API key. This can be found in your <a href='http://www.SellFire.com'>SellFire.com</a> account page. If you don't have a SellFire account, you can register for free.");
 }
 
 /*
@@ -171,15 +271,7 @@ echo "To use the SellFire Plugin, you need to enter your API key. This can be fo
 function jem_sf_api_key_input() {
     $options = get_option( 'jem_sf_options' );
     echo "<input id='api_key' style='width: 400px;' name='jem_sf_options[api_key]' type='text' value='{$options['api_key']}'/>";
-    echo "<div><a target='_SELLFIRE' href='https://www.sellfire.com/MyAccount/DataApiAccount'>Find my WordPress Key</a></div>";
-    echo "<h3>How to use this plugin</h3>";
-    echo "<p>Once you've added your WordPress key to the plugin it is very simple to use.</p>";
-    echo "<ul class='ul-disc'>";
-    echo "<li>Log into your SellFire account and create a new store. Creating an account is <strong>free</strong> and requires only an email address.</li>";
-    echo "<li>On your blog, create a new post or page. You can also edit an existing one. Underneath the page/post editor there will be a widget titled 'SellFire Affiliate Store Builder'. Use that widget to add your store to your post or page</li>";
-    echo "<li>Want to have multiple product categories on your site? Just create a new store per category and add it to a different page.</li>";
-    echo "</ul>";
-	
+    echo "<div><a target='_SELLFIRE' href='https://www.sellfire.com/MyAccount/DataApiAccount'>Find my API Key</a></div>";
 }
 
 /*
@@ -202,6 +294,69 @@ function jem_sf_validate_options( $input ) {
         add_settings_error('jem_sf_api_key', 'jem_sf_api_key_error', 'Invalid API key', 'error');
     }
     return $input;
+}
+
+/*
+ * Redirects the user to the edit page after they are done editing there
+ * store
+ */
+function jem_sf_redirect()
+{
+    $send_to_edit = $_GET['jemSfEditPage'];
+    $store_id = $_GET['jemSfStoreId'];
+    $store_name = $_GET['jemSfStoreName'];
+    
+    if ($send_to_edit)
+    {
+        $post_id = get_option('jem_sf_' . $store_id);
+        
+        //check that the post still exists
+        if ($post_id)
+        {
+            $post = get_post($post_id);           
+            if (!$post || $post->post_status == 'trash')
+            {
+                $post_id = false;
+            }            
+        }
+        
+        if (!$post_id)
+        {
+            $post_id = jem_sf_create_post($store_id, $store_name);
+            update_option('jem_sf_' . $store_id, $post_id);
+        }
+        wp_redirect(get_edit_post_link($post_id, ''));  
+        exit();
+    }    
+}
+
+function jem_sf_set_api_key()
+{
+    $api_key = $_GET['apiKey'];
+    $option = get_option('jem_sf_options');
+    $option['api_key'] = 'wordupdawg';
+    update_option('jem_sf_options', $option);
+    if ($api_key)
+    {
+        $option = get_option('jem_sf_options');
+        $option['api_key'] = $api_key;
+        update_option('jem_sf_options', $option);
+        die('true');
+    }
+    die('false');
+}
+
+function jem_sf_create_post( $store_id, $store_name)
+{
+    $user = wp_get_current_user();
+    $post = array();
+    $post['post_author'] = $user->ID;
+    $post['post_content'] = '[sellfire id="' . $store_id . '" name="' . $store_name . '"]';
+    $post['post_status'] = 'draft';
+    $post['post_title'] = $store_name;
+    $post['post_type'] = 'page';
+    
+    return wp_insert_post($post);
 }
 
 /*
