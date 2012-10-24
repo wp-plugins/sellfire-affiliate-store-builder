@@ -145,14 +145,14 @@ function jem_sf_add_menus() {
     add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );    
         
     wp_enqueue_script( 'jquery' );
-    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js' );
+    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.0' );
     wp_enqueue_script( 'jem_sf_jseasyXDM', JEM_SF_INSERTJS . '/easyXDM/easyXDM.min.js' );
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
     $params = array(
         "ajaxurl" => admin_url('admin-ajax.php', $protocol));
     
     wp_localize_script('jem_sf_jsscript', 'jem_sf', $params);
-    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css' );
+    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.0' );
 }
  
 /*
@@ -215,6 +215,8 @@ function jem_sf_site_overview() {
  * Creates a new SellFire account if needed
  */
 function jem_sf_getSiteId() {
+    //delete_option('jem_sf_options');
+    
     $options = get_option( 'jem_sf_options' );    
     $siteId = null;
     if ($options == null) {
@@ -222,7 +224,7 @@ function jem_sf_getSiteId() {
     } else {
         $siteId = $options['site_id'];        
     }    
-
+        
     /*
     $options['site_id']=null;
     $options['api_key']=null;
@@ -241,6 +243,7 @@ function jem_sf_getSiteId() {
         $params = array('sslverify' => false, 'body' => $post_values);    
         $response = wp_remote_post($url, $params);    
         $result = json_decode( wp_remote_retrieve_body(&$response) );
+        echo $result->ApiKey;
         $options['api_key'] = $result->ApiKey;
         $options['site_id'] = $result->SiteId;
         $siteId = $result->SiteId;
