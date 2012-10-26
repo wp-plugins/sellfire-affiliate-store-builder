@@ -137,12 +137,13 @@ function jem_sf_preg_escape_back($string) {
  */
 function jem_sf_add_menus() {
     add_menu_page( 'SellFire Affiliate Store Builder Plugin', 'SellFire', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview', plugins_url('/images/sf-icon.jpg', __FILE__));        
-    add_submenu_page ('jem_sf_sellfire', 'SellFire Plugin', 'General', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview' );
+    add_submenu_page ('jem_sf_sellfire', 'SellFire Plugin', 'Overview', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview' );
     add_submenu_page ('jem_sf_sellfire', 'Networks', 'Networks', 'manage_options', 'jem_sf_sellfire_networks', 'jem_sf_networks' );
     add_submenu_page ('jem_sf_sellfire', 'Merchants', 'Merchants', 'manage_options', 'jem_sf_sellfire_merchants', 'jem_sf_merchants' );
     add_submenu_page ('jem_sf_sellfire', 'Store Categories', 'Categories', 'manage_options', 'jem_sf_sellfire_categories', 'jem_sf_categories' );
     add_submenu_page ('jem_sf_sellfire', 'Store Widgets', 'Widgets', 'manage_options', 'jem_sf_sellfire_widgets', 'jem_sf_widgets' );
     add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );    
+    add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );    
         
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.0' );
@@ -196,6 +197,15 @@ function jem_sf_widgets() {
 }
 
 /*
+ * Draws the widgets page
+ */
+function jem_sf_create_store() {
+    
+    $url  = '/WordPress/CreateStore?usage=' . $_GET['usage'];
+    include('includes/options-page.php');
+}
+
+/*
  * Draws the merchants page
  */
 function jem_sf_merchants() {  
@@ -243,7 +253,6 @@ function jem_sf_getSiteId() {
         $params = array('sslverify' => false, 'body' => $post_values);    
         $response = wp_remote_post($url, $params);    
         $result = json_decode( wp_remote_retrieve_body(&$response) );
-        echo $result->ApiKey;
         $options['api_key'] = $result->ApiKey;
         $options['site_id'] = $result->SiteId;
         $siteId = $result->SiteId;
@@ -337,8 +346,6 @@ function jem_sf_set_api_key()
 {
     $api_key = $_GET['apiKey'];
     $option = get_option('jem_sf_options');
-    $option['api_key'] = 'wordupdawg';
-    update_option('jem_sf_options', $option);
     if ($api_key)
     {
         $option = get_option('jem_sf_options');

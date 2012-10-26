@@ -1,6 +1,14 @@
     <?php
-        $url = urlencode($url);
-        $siteId = jem_sf_getSiteId();
+        $siteId = jem_sf_getSiteId();    
+        if (strrpos($url, '?'))
+        {
+            $url = $url . '&sfSiteId=' . $siteId;
+        }
+        else
+        {
+            $url = $url . '?sfSiteId=' . $siteId;
+        }
+        $url = urlencode($url);        
         $admin_page = get_admin_url();
     ?>
 
@@ -9,7 +17,7 @@
     <script type="text/javascript">
         pageHeight  = jQuery(document).height();
         new easyXDM.Socket({            
-            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?url=<?php echo($url) . urlencode("?RRFilter=disabled&sfSiteId=" . $siteId) ?>&pageHeight=" + pageHeight,
+            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?url=<?php echo $url ?>&pageHeight=" + pageHeight,
             container: document.getElementById("sfContainer"),
             onMessage: function (message, origin)
             {      
