@@ -4,18 +4,18 @@ Donate link: http://www.sellfire.com/
 Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 2.0
+Stable tag: 2.1
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
 == Description ==
-The SellFire Affiliate Store Builder Plugin gives affiliates an easy way to add product advertisements into their blog.  It’s completely free to use and as an affiliate you keep 100% of your commissions.
+The SellFire Affiliate Store Builder Plugin gives affiliates an easy way to add product advertisements into their blog.  It's completely free to use and as an affiliate you keep 100% of your commissions.
 
 When you use [SellFire](http://www.sellfire.com "Affiliate Store Builder"), you do not need to download or import large data feed files or use a different tool for each affiliate network. You simply use SellFire.
 
-*Search nearly 50 million product advertisements and over 15,000 affiliate coupons and deals. 
-*Easily create custom advertisement displays to add to your blog posts or pages with our one of a kind point and click design studio.
-*All product and coupon links will automatically have your affiliate IDs embedded into them.
+* Search nearly 50 million product advertisements and over 15,000 affiliate coupons and deals. 
+* Easily create custom advertisement displays to add to your blog posts or pages with our one of a kind point and click design studio.
+* All product and coupon links will automatically have your affiliate IDs embedded into them.
 
 SellFire has integrated with the largest affiliate networks in the world and has products and coupons from almost 3,000 merchants. We currently work with:
 
@@ -33,7 +33,7 @@ So what are you waiting for? Try it out now.
 == Installation ==
 To install the plugin, follow these steps:
 
-1. If you are already in your blog, just click the install button to the right. If you are on the WordPress.com site, click download and unzip the zip archive to the `/wp-content/plugins/` directory
+1. If you are already in your blog, just click the install button to the right. If you are on the WordPress.com site, click download and unzip the zip archive to the '/wp-content/plugins/' directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 == Frequently Asked Questions ==
