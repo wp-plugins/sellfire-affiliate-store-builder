@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: jmacinnes
 Donate link: http://www.sellfire.com/
-Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network
+Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr
 Requires at least: 3.0
 Tested up to: 3.4.2
 Stable tag: 2.0
@@ -73,3 +73,7 @@ The free subscription limits you to 3 advertisement displays.
 Large update to the plug in. You can now create, modify, and preview your stores
 from right within WordPress. If you do not already have a SellFire account,
 one will be created for you automatically.
+
+= 2.1 =
+* Fixed issue with merchant selection not saving
+* Other various bug fixes
