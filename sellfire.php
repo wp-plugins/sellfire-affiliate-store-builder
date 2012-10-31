@@ -5,7 +5,7 @@
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog. 
  * Author: Jason MacInnes
- * Version: 2.1
+ * Version: 2.2
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
@@ -51,6 +51,8 @@ define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
 //define a constant to the CSS directory
 define( 'JEM_SF_INSERTCSS', plugin_dir_url(__FILE__).'css' );
 
+//define a version number to communicate with the mother ship
+define('JEM_SF_VERSION', '2.2');
 
 //include the definition of the post meta box
 include( 'includes/post-meta-box.php' );
@@ -259,7 +261,7 @@ function jem_sf_getSiteId() {
         update_option('jem_sf_options', $options);
     }
     
-    return $siteId;
+    return $options;
 }
 
 /*
@@ -345,11 +347,13 @@ function jem_sf_redirect()
 function jem_sf_set_api_key()
 {
     $api_key = $_GET['apiKey'];
+    $site_id = $_GET['siteId'];
     $option = get_option('jem_sf_options');
     if ($api_key)
     {
         $option = get_option('jem_sf_options');
         $option['api_key'] = $api_key;
+        $option['site_id'] = $site_id;
         update_option('jem_sf_options', $option);
         die('true');
     }

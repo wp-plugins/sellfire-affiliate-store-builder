@@ -1,5 +1,7 @@
     <?php
-        $siteId = jem_sf_getSiteId();    
+        $jemOptions = jem_sf_getSiteId();    
+        $siteId = $jemOptions['site_id'];
+        $apiKey = $jemOptions['api_key'];
         if (strrpos($url, '?'))
         {
             $url = $url . '&sfSiteId=' . $siteId;
@@ -17,7 +19,7 @@
     <script type="text/javascript">
         pageHeight  = jQuery(document).height();
         new easyXDM.Socket({            
-            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?url=<?php echo $url ?>&pageHeight=" + pageHeight,
+            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?version=<?php echo JEM_SF_VERSION ?>&url=<?php echo $url ?>&pageHeight=" + pageHeight,
             container: document.getElementById("sfContainer"),
             onMessage: function (message, origin)
             {      
@@ -59,9 +61,12 @@
             jQuery("#frmSendToEdit").submit();            
         }
         
-        function setApiKey(key)
+        function setApiKey(keyData)
         {
-            jQuery.get(jem_sf.ajaxurl, {action: 'jem_sf_set_api_key', apiKey: key}, null);
+            jQuery.get(
+                jem_sf.ajaxurl, 
+                {action: 'jem_sf_set_api_key', apiKey: keyData.ApiKey, siteId: keyData.SiteId}, 
+                function(){ document.location.reload(true) });
         }
         
     </script>
@@ -73,3 +78,10 @@
         <input type="hidden" name="jemSfEditPage" value="1">
         
     </form>
+    
+    <!---    
+    API KEY: <?php echo $apiKey ?>
+    SITE ID: <?php echo $siteId ?>
+    -->
+
+    
