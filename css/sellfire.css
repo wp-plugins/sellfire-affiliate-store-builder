@@ -1,0 +1,62 @@
+/* 
+    Document   : sellfire
+    Created on : Mar 8, 2012, 8:12:16 AM
+    Author     : Jason
+    Description:
+        For the SellFire Affilliate WP Plugin
+*/
+
+.sf-store-meta-box td
+{
+    padding-top: 5px;
+}
+
+#sfContainer iframe
+{
+        width: 100%; 	
+        visibility: hidden;
+        min-width: 800px;
+}
+
+.sf-title {
+    font-size: 15px;
+    font-weight: bold;
+    padding-bottom: 10px;
+}
+
+#divSfQuickStoreDialog {
+    padding: 20px;
+}
+
+#divSfQuickStoreDialog input[type="text"]{
+    width: 90%;
+}
+
+#divSfQuickStoreDialog .button-container
+{
+    text-align:center;
+    padding-top: 10px;
+}
+
+#divSfQuickStoreDialog .quick-store-element
+{
+    padding: 5px 10px 10px 10px;
+    vertical-align: top;
+}
+
+#divSfQuickStoreDialog .alt
+{
+    background-color: #EAEAEA;
+    border-bottom: solid 1px #777777;
+    border-top: solid 1px #777777;
+}
+
+#divSfQuickStoreDialog .input-description
+{
+    font-style: italic;
+}
+
+#divSfQuickStoreDialog .input-label
+{
+    font-weight: bold;
+}
