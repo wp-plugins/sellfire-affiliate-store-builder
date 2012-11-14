@@ -5,7 +5,7 @@
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog. 
  * Author: Jason MacInnes
- * Version: 2.2
+ * Version: 2.3
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
@@ -33,6 +33,8 @@ add_action( 'admin_init', 'jem_sf_redirect' );
 //register a shortcode
 add_shortcode( 'sellfire', 'jem_sf_sellfire_shortcode' );
 
+add_shortcode( 'sellFireQuick', 'jem_sf_sellfire_quick_shortcode' );
+
 //SF Domain
 define ( 'JEM_SF_DOMAIN', 'http://www.sellfire.com' );
 
@@ -56,6 +58,8 @@ define('JEM_SF_VERSION', '2.2');
 
 //include the definition of the post meta box
 include( 'includes/post-meta-box.php' );
+
+$jemSfShortCodeSequence = 1;
 
 /*
  * Installs the SellFire plug-in
@@ -101,7 +105,7 @@ function jem_sf_replace_store_tags( $content ) {
 /*
  * Replaces the sellfire shortcode with store contents
  */
-function jem_sf_sellfire_shortcode($attr) {   
+function jem_sf_sellfire_shortcode($attr) {       
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
     if (!$store_content || current_user_can('edit_posts'))
     {
@@ -111,9 +115,45 @@ function jem_sf_sellfire_shortcode($attr) {
             return '';
         }
         $store_content = wp_remote_retrieve_body(&$response);
-        set_transient(jem_sf_sellfire_transient_code($attr["id"]), $store_content);
+        set_transient(jem_sf_sellfire_transient_code($attr["id"]), $store_content, 300);
     }
     return $store_content;
+}
+
+/*
+ * Replaces the sellfire quick store shortcode with store contents
+ */
+function jem_sf_sellfire_quick_shortcode($attr) {       
+    global $post, $jemSfShortCodeSequence;
+    
+    $postId = 1;
+    if ($post->ID){
+        $postId = $post->ID;
+    }
+    $transientCode =jem_sf_sellfire_quick_transient_code($postId, $jemSfShortCodeSequence);
+    $store_content = get_transient($transientCode);
+    
+    if (!$store_content || current_user_can('edit_posts'))
+    {
+        $options = get_option( 'jem_sf_options' );   
+
+        $url = JEM_SF_DOMAIN . '/StoreDisplay/EmbeddedQuickStore?postId=' . $postId . '&qsSequence=' . $jemSfShortCodeSequence . '&siteId=' . $options['site_id'];
+
+        foreach ($attr as $key => $value)
+        {
+            $url .= '&' . urlencode($key) . "=" . urlencode($value);
+        }
+        $response = wp_remote_get($url);
+        if (is_wp_error($response) || wp_remote_retrieve_response_code(&$response) != 200)
+        {
+            return '';
+        }
+        
+        $store_content = wp_remote_retrieve_body(&$response);
+        set_transient($transientCode, $store_content, 300);           
+    }  
+    $jemSfShortCodeSequence++;
+    return $store_content;     
 }
 
 /*
@@ -122,7 +162,17 @@ function jem_sf_sellfire_shortcode($attr) {
  */
 function jem_sf_sellfire_transient_code($store_id)
 {
-    return "sellfire-store-" . $store_id;
+    return "sf-st-" . $store_id;
+}
+
+
+/*
+ * Given a post ID and sequence, returns the quick store option
+ * for that store
+ */
+function jem_sf_sellfire_quick_transient_code($post_id, $sequence)
+{
+    return "sf-qs-" . $post_id . "-" . $sequence;
 }
 
 /*
@@ -388,6 +438,7 @@ function jem_sf_api_call( $api_operation, $post_values ) {
     $sf_options = get_option('jem_sf_options');
 
     $post_values['apiKey'] = $sf_options['api_key'];
+    $post_values['siteId'] = $sf_options['site_id'];
     
     $response = wp_remote_post( 
             JEM_SF_API_URL . $api_operation, 

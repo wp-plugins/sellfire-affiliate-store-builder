@@ -25,7 +25,7 @@ function jem_sf_meta_render() {
     $options = get_option( 'jem_sf_options' );   
     $response = null;
     if ($options['api_key']){
-        $response = jem_sf_api_call( 'ListStoreSummaries', null );
+        $response = jem_sf_api_call( 'GetWordPressPostData', null );
     }    
     include ( 'post-meta-html.php' );
 }
