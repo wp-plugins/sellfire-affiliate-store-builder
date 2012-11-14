@@ -198,7 +198,7 @@ function jem_sf_add_menus() {
     add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );    
         
     wp_enqueue_script( 'jquery' );
-    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.0' );
+    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.3' );
     wp_enqueue_script( 'jem_sf_jseasyXDM', JEM_SF_INSERTJS . '/easyXDM/easyXDM.min.js' );
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
     $params = array(
