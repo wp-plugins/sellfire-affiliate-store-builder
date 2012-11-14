@@ -205,7 +205,7 @@ function jem_sf_add_menus() {
         "ajaxurl" => admin_url('admin-ajax.php', $protocol));
     
     wp_localize_script('jem_sf_jsscript', 'jem_sf', $params);
-    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.0' );
+    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.3' );
 }
  
 /*
