@@ -4,7 +4,7 @@ Donate link: http://www.sellfire.com/
 Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 2.3
+Stable tag: 2.4
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
@@ -84,3 +84,6 @@ one will be created for you automatically.
 
 = 2.3 = 
 * Adding 'Quick Store' functionality - the ability to create a display or products or coupons all without leaving the WordPress post editor
+
+= 2.4 = 
+* Fixed issue with page editor caused by bad HTML introduced in 2.3
