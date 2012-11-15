@@ -159,7 +159,7 @@ jQuery(document).ready(function() {
     var jElement = jQuery('#divSfQuickStoreDialog');
     if (jElement.length > 0)
     {
-        jElement.dialog({ autoOpen: false, modal: true, title: "Add Quick Store", minWidth: 600 });
+        jElement.dialog({ autoOpen: false, modal: true, title: "Add Quick Store", minWidth: 600, dialogClass: 'wp-dialog' });
         jQuery("#divSfQuickStoreDialog input[type='text']").keypress(jemSfQuickStoreDialogOnEnter);            
     }   
 });

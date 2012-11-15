@@ -27,6 +27,8 @@ add_action ( 'wp_ajax_jem_sf_set_api_key', 'jem_sf_set_api_key' );
 //edit page
 add_action( 'admin_init', 'jem_sf_redirect' );
 
+add_action( 'admin_enqueue_scripts', 'jem_sf_add_scripts' );
+
 //strips out store tags
 //add_filter( 'the_content', 'jem_sf_replace_store_tags' );
 
@@ -65,11 +67,6 @@ $jemSfShortCodeSequence = 1;
  * Installs the SellFire plug-in
  */
 function jem_sf_install() {
-    $jem_sf_options = array(
-        'api_key' => ''
-    );
-    //todo: verify the existence of curl
-    update_option( 'jem_sf_options', $jem_sf_options );
 }
 
 /*
@@ -197,15 +194,22 @@ function jem_sf_add_menus() {
     add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );
     add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );
 
+}
+
+function jem_sf_add_scripts() {
     wp_enqueue_script( 'jquery' );
-    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.3' );
+    wp_enqueue_script( 'jquery-ui-core' );
+    wp_enqueue_script( 'jquery-ui-dialog' );
+    wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.4' );
     wp_enqueue_script( 'jem_sf_jseasyXDM', JEM_SF_INSERTJS . '/easyXDM/easyXDM.min.js' );
+
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
-    $params = array(
-        "ajaxurl" => admin_url('admin-ajax.php', $protocol));
+
+    $params = array("ajaxurl" => admin_url('admin-ajax.php', $protocol));
 
     wp_localize_script('jem_sf_jsscript', 'jem_sf', $params);
-    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.3' );
+    wp_enqueue_style (  'wp-jquery-ui-dialog');
+    wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.4' );
 }
 
 /*
