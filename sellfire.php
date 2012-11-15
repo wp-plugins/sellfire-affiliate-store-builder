@@ -3,9 +3,9 @@
 /*
  * Plugin Name: SellFire Affiliate Store Builder
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
- * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog. 
+ * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog.
  * Author: Jason MacInnes
- * Version: 2.3
+ * Version: 2.4
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
@@ -23,7 +23,7 @@ add_action ( 'wp_ajax_jem_sf_flush_cache', 'jem_sf_flush_cache' );
 //registers the set api key
 add_action ( 'wp_ajax_jem_sf_set_api_key', 'jem_sf_set_api_key' );
 
-//registers the redirect that looks up a page for a store and redirects to the 
+//registers the redirect that looks up a page for a store and redirects to the
 //edit page
 add_action( 'admin_init', 'jem_sf_redirect' );
 
@@ -41,10 +41,10 @@ define ( 'JEM_SF_DOMAIN', 'http://www.sellfire.com' );
 //SF API Domain
 define ( 'JEM_SF_API_DOMAIN', 'https://www.sellfire.com' );
 
-//url of the SF API 
+//url of the SF API
 define( 'JEM_SF_API_URL', JEM_SF_API_DOMAIN . '/Api/' );
 
-//url of the SF WordPress Controller 
+//url of the SF WordPress Controller
 define( 'JEM_SF_WP_URL', JEM_SF_DOMAIN . '/WordPress/' );
 
 //define a constant to the JS directory
@@ -77,35 +77,35 @@ function jem_sf_install() {
  * content
  */
 function jem_sf_replace_store_tags( $content ) {
-    $match_found = 1;    
+    $match_found = 1;
     $match_pattern = '/<div[^<>]*?data-sf-storeid=["\']([\w]+)["\'][^<]*?[^<>]*?>[^<>]*?<\/div>/i';
-        
+
     while (true)
-    {        
-        $match_found = preg_match( 
-                    $match_pattern, 
-                    $content, 
+    {
+        $match_found = preg_match(
+                    $match_pattern,
+                    $content,
                     $matches);
-        
+
         if (! $match_found)
-        {            
+        {
             break;
         }
-        
+
         $store_id = $matches[1];
-                
+
         $store_content = jem_sf_get_url_contents( JEM_SF_DOMAIN . '/StoreDisplay/EmbeddedStore?logImpression=false&storeId=' . $store_id);
         $content = preg_replace($match_pattern, jem_sf_preg_escape_back($store_content), $content);
         return $content;
     }
-    
+
     return $content;
 }
 
 /*
  * Replaces the sellfire shortcode with store contents
  */
-function jem_sf_sellfire_shortcode($attr) {       
+function jem_sf_sellfire_shortcode($attr) {
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
     if (!$store_content || current_user_can('edit_posts'))
     {
@@ -123,19 +123,19 @@ function jem_sf_sellfire_shortcode($attr) {
 /*
  * Replaces the sellfire quick store shortcode with store contents
  */
-function jem_sf_sellfire_quick_shortcode($attr) {       
+function jem_sf_sellfire_quick_shortcode($attr) {
     global $post, $jemSfShortCodeSequence;
-    
+
     $postId = 1;
     if ($post->ID){
         $postId = $post->ID;
     }
     $transientCode =jem_sf_sellfire_quick_transient_code($postId, $jemSfShortCodeSequence);
     $store_content = get_transient($transientCode);
-    
+
     if (!$store_content || current_user_can('edit_posts'))
     {
-        $options = get_option( 'jem_sf_options' );   
+        $options = get_option( 'jem_sf_options' );
 
         $url = JEM_SF_DOMAIN . '/StoreDisplay/EmbeddedQuickStore?postId=' . $postId . '&qsSequence=' . $jemSfShortCodeSequence . '&siteId=' . $options['site_id'];
 
@@ -148,16 +148,16 @@ function jem_sf_sellfire_quick_shortcode($attr) {
         {
             return '';
         }
-        
+
         $store_content = wp_remote_retrieve_body(&$response);
-        set_transient($transientCode, $store_content, 300);           
-    }  
+        set_transient($transientCode, $store_content, 300);
+    }
     $jemSfShortCodeSequence++;
-    return $store_content;     
+    return $store_content;
 }
 
 /*
- * Given a store ID, returns the transient option code 
+ * Given a store ID, returns the transient option code
  * for that store
  */
 function jem_sf_sellfire_transient_code($store_id)
@@ -178,36 +178,36 @@ function jem_sf_sellfire_quick_transient_code($post_id, $sequence)
 /*
  * Removes characters that trigger a back-reference
  */
-function jem_sf_preg_escape_back($string) { 
-    // Replace $ with \$ and \ with \\ 
-    $string = preg_replace('#(?<!\\\\)(\\$|\\\\)#', '\\\\$1', $string); 
-    return $string; 
+function jem_sf_preg_escape_back($string) {
+    // Replace $ with \$ and \ with \\
+    $string = preg_replace('#(?<!\\\\)(\\$|\\\\)#', '\\\\$1', $string);
+    return $string;
 }
 
 /*
  * Adds the appropriate menu's to the wordpress admin page
  */
 function jem_sf_add_menus() {
-    add_menu_page( 'SellFire Affiliate Store Builder Plugin', 'SellFire', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview', plugins_url('/images/sf-icon.jpg', __FILE__));        
+    add_menu_page( 'SellFire Affiliate Store Builder Plugin', 'SellFire', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview', plugins_url('/images/sf-icon.jpg', __FILE__));
     add_submenu_page ('jem_sf_sellfire', 'SellFire Plugin', 'Overview', 'manage_options', 'jem_sf_sellfire', 'jem_sf_site_overview' );
     add_submenu_page ('jem_sf_sellfire', 'Networks', 'Networks', 'manage_options', 'jem_sf_sellfire_networks', 'jem_sf_networks' );
     add_submenu_page ('jem_sf_sellfire', 'Merchants', 'Merchants', 'manage_options', 'jem_sf_sellfire_merchants', 'jem_sf_merchants' );
     add_submenu_page ('jem_sf_sellfire', 'Store Categories', 'Categories', 'manage_options', 'jem_sf_sellfire_categories', 'jem_sf_categories' );
     add_submenu_page ('jem_sf_sellfire', 'Store Widgets', 'Widgets', 'manage_options', 'jem_sf_sellfire_widgets', 'jem_sf_widgets' );
-    add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );    
-    add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );    
-        
+    add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );
+    add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );
+
     wp_enqueue_script( 'jquery' );
     wp_enqueue_script( 'jem_sf_jsscript', JEM_SF_INSERTJS . '/sellfire.js?sfversion=2.3' );
     wp_enqueue_script( 'jem_sf_jseasyXDM', JEM_SF_INSERTJS . '/easyXDM/easyXDM.min.js' );
     $protocol = isset( $_SERVER["HTTPS"]) ? "https://" : "http://";
     $params = array(
         "ajaxurl" => admin_url('admin-ajax.php', $protocol));
-    
+
     wp_localize_script('jem_sf_jsscript', 'jem_sf', $params);
     wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=2.3' );
 }
- 
+
 /*
  * Register's SellFire settings with WP
  */
@@ -216,7 +216,7 @@ function jem_sf_register_settings() {
     register_setting('jem_sf_options', 'jem_sf_options', 'jem_sf_validate_options');
 }
 
-/* 
+/*
  * Draws the settings page
  */
 function jem_sf_store_theme() {
@@ -252,7 +252,7 @@ function jem_sf_widgets() {
  * Draws the widgets page
  */
 function jem_sf_create_store() {
-    
+
     $url  = '/WordPress/CreateStore?usage=' . $_GET['usage'];
     include('includes/options-page.php');
 }
@@ -260,7 +260,7 @@ function jem_sf_create_store() {
 /*
  * Draws the merchants page
  */
-function jem_sf_merchants() {  
+function jem_sf_merchants() {
     $url = '/WordPress/Merchants';
     include('includes/options-page.php');
 }
@@ -268,7 +268,7 @@ function jem_sf_merchants() {
 /*
  * Draws the merchants page
  */
-function jem_sf_site_overview() {  
+function jem_sf_site_overview() {
     $url = '/WordPress/SiteOverview';
     include('includes/options-page.php');
 }
@@ -278,39 +278,39 @@ function jem_sf_site_overview() {
  */
 function jem_sf_getSiteId() {
     //delete_option('jem_sf_options');
-    
-    $options = get_option( 'jem_sf_options' );    
+
+    $options = get_option( 'jem_sf_options' );
     $siteId = null;
     if ($options == null) {
-        $options = array();        
+        $options = array();
     } else {
-        $siteId = $options['site_id'];        
-    }    
-        
+        $siteId = $options['site_id'];
+    }
+
     /*
     $options['site_id']=null;
     $options['api_key']=null;
-    $siteId = null;      
-     */            
-      
+    $siteId = null;
+     */
+
     if ($siteId == null || $siteId == '') {
-        
-        $site_url = get_home_url();    
+
+        $site_url = get_home_url();
         $site_name = get_bloginfo( 'name' );
         $url = JEM_SF_WP_URL . 'CreateAccount';
         $post_values = array();
         $post_values['siteUrl'] = urlencode($site_url);
         $post_values['siteName'] = urlencode($site_name);
         $post_values['apiKey'] = $options['api_key'] == null ? '' : $options['api_key'];
-        $params = array('sslverify' => false, 'body' => $post_values);    
-        $response = wp_remote_post($url, $params);    
+        $params = array('sslverify' => false, 'body' => $post_values);
+        $response = wp_remote_post($url, $params);
         $result = json_decode( wp_remote_retrieve_body(&$response) );
         $options['api_key'] = $result->ApiKey;
         $options['site_id'] = $result->SiteId;
         $siteId = $result->SiteId;
         update_option('jem_sf_options', $options);
     }
-    
+
     return $options;
 }
 
@@ -341,16 +341,16 @@ function jem_sf_api_key_input() {
 /*
  * Validates the settings that have been posted
  */
-function jem_sf_validate_options( $input ) {    
+function jem_sf_validate_options( $input ) {
     $api_key = $input['api_key'];
-    $site_url = get_home_url();    
+    $site_url = get_home_url();
     $site_name = get_bloginfo( 'name' );
     $url = JEM_SF_API_URL . 'ValidApiKey';
     $post_values = array();
     $post_values['apiKey'] = $api_key;
     $post_values['siteUrl'] = $site_url;
     $post_values['siteName'] = $site_name;
-    $params = array('sslverify' => false, 'body' => $post_values);    
+    $params = array('sslverify' => false, 'body' => $post_values);
     $response = wp_remote_post($url, $params);
     $content = wp_remote_retrieve_body(&$response);
     if ($content != "true")
@@ -369,29 +369,29 @@ function jem_sf_redirect()
     $send_to_edit = $_GET['jemSfEditPage'];
     $store_id = $_GET['jemSfStoreId'];
     $store_name = $_GET['jemSfStoreName'];
-    
+
     if ($send_to_edit)
     {
         $post_id = get_option('jem_sf_' . $store_id);
-        
+
         //check that the post still exists
         if ($post_id)
         {
-            $post = get_post($post_id);           
+            $post = get_post($post_id);
             if (!$post || $post->post_status == 'trash')
             {
                 $post_id = false;
-            }            
+            }
         }
-        
+
         if (!$post_id)
         {
             $post_id = jem_sf_create_post($store_id, $store_name);
             update_option('jem_sf_' . $store_id, $post_id);
         }
-        wp_redirect(get_edit_post_link($post_id, ''));  
+        wp_redirect(get_edit_post_link($post_id, ''));
         exit();
-    }    
+    }
 }
 
 function jem_sf_set_api_key()
@@ -419,7 +419,7 @@ function jem_sf_create_post( $store_id, $store_name)
     $post['post_status'] = 'draft';
     $post['post_title'] = $store_name;
     $post['post_type'] = 'page';
-    
+
     return wp_insert_post($post);
 }
 
@@ -428,20 +428,20 @@ function jem_sf_create_post( $store_id, $store_name)
  * and posts the JSON decoded values in post_values.
  */
 function jem_sf_api_call( $api_operation, $post_values ) {
-    
+
     if ($post_values == null)
     {
         $post_values = array();
     }
-    
+
     //create array of variables to post
     $sf_options = get_option('jem_sf_options');
 
     $post_values['apiKey'] = $sf_options['api_key'];
     $post_values['siteId'] = $sf_options['site_id'];
-    
-    $response = wp_remote_post( 
-            JEM_SF_API_URL . $api_operation, 
+
+    $response = wp_remote_post(
+            JEM_SF_API_URL . $api_operation,
             array ( 'body' => $post_values, "sslverify" => false) );
 
     return json_decode( wp_remote_retrieve_body(&$response) );
@@ -451,7 +451,7 @@ function jem_sf_api_call( $api_operation, $post_values ) {
  * Removes all of the store data from the cache
  */
 function jem_sf_flush_cache ( ) {
-    
+
     $response = jem_sf_api_call( 'ListStoreSummaries', null);
     foreach ($response->Data as $store)
     {
