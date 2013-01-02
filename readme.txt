@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: jmacinnes
 Donate link: http://www.sellfire.com/
-Tags: affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr
+Tags: affiliate marketing, affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr, premiumpress, couponpress, amazon
 Requires at least: 3.0
 Tested up to: 3.4.2
-Stable tag: 2.4
+Stable tag: 2.5
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
@@ -87,3 +87,6 @@ one will be created for you automatically.
 
 = 2.4 = 
 * Fixed issue with page editor caused by bad HTML introduced in 2.3
+
+= 2.5 = 
+* Improving plugin compatibility with various themes

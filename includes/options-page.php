@@ -12,6 +12,53 @@
         }
         $url = urlencode($url);        
         $admin_page = get_admin_url();
+        
+        if ($siteId == null || $siteId == '')
+        {
+            $curl_worked = false;
+            try
+            {
+                $response = wp_remote_get('http://www.google.com' );
+                if( !is_wp_error( $response ) ) 
+                {
+                    $curl_worked = true;
+                }
+            }
+            catch (Exception $e)
+            {
+                $curl_worked = false;
+            }
+            
+            if ($curl_worked)
+            {
+            ?>
+                <h2>Could not connect to SellFire</h2>
+                <p>
+                    Snap! There seems to be a problem. The plug-in tried to create
+                    a new SellFire account for you, but it couldn't connect to SellFire.com. 
+                    Refresh the page to try again. If the problem persists, please 
+                    e-mail <a href="mailto:support@sellfire.com">support@sellfire.com</a>.
+                </p>                            
+            <?php
+            }
+            else
+            {
+                ?>
+                
+                <h2>Web Hosting Does Not Support this Plug-in</h2>
+                <p>
+                    Snap! There is a problem. The plug-in cannot communicate
+                    with SellFire.com because your web server does not seem to
+                    be allowing external communications. Please contact your
+                    web hosting provider and ask them to enable the PHP CURL
+                    command for your web server. If you have any questions
+                    please email <a href="mailto:support@sellfire.com">support@sellfire.com</a>.
+                </p>                 
+                
+                <?php
+            }
+            return;
+        }
     ?>
 
     <div id="sfContainer">
@@ -19,7 +66,7 @@
     <script type="text/javascript">
         pageHeight  = jQuery(document).height();
         new easyXDM.Socket({            
-            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?version=<?php echo JEM_SF_VERSION ?>&url=<?php echo $url ?>&pageHeight=" + pageHeight,
+            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?RRFilter=disabled&version=<?php echo JEM_SF_VERSION ?>&url=<?php echo $url ?>&pageHeight=" + pageHeight,
             container: document.getElementById("sfContainer"),
             onMessage: function (message, origin)
             {      
