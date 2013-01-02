@@ -77,7 +77,7 @@ define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
 define( 'JEM_SF_INSERTCSS', plugin_dir_url(__FILE__).'css' );
 
 //define a version number to communicate with the mother ship
-define('JEM_SF_VERSION', '2.5');
+define('JEM_SF_VERSION', '2.6');
 
 //include the definition of the post meta box
 include( 'includes/post-meta-box.php' );
@@ -123,7 +123,7 @@ function jem_sf_initialize_options() {
         $options['pp_image_width'] = 250;        
     }
     
-    $options['direct_echo'] = true;
+    $options['direct_echo'] = false;
     
     update_option('jem_sf_options', $options);    
 }

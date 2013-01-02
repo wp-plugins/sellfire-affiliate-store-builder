@@ -55,7 +55,7 @@
                         <input type="checkbox" name="direct_echo" value="1" <?php echo $check_echo ?>>
                         <div>
                             Enabling this setting maximizes compatibility with WordPress themes.
-                            You should only disable this setting if you want the output of the SellFire plugin
+                            You should disable this setting if you want the output of the SellFire plugin
                             to be processed by other WordPress plugins or by your WordPress theme.
                         </div>
                     </td>                        
