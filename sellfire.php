@@ -123,7 +123,7 @@ function jem_sf_initialize_options() {
         $options['pp_image_width'] = 250;        
     }
     
-    $options['direct_echo'] = true;
+    $options['direct_echo'] = false;
     
     update_option('jem_sf_options', $options);    
 }
