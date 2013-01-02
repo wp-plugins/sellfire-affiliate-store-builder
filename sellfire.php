@@ -59,10 +59,10 @@ add_shortcode( 'sellFireQuick', 'jem_sf_sellfire_quick_shortcode' );
 add_shortcode( 'sellfirepp', 'jem_sf_sellfire_product_page_shortcode' );
 
 //SF Domain
-define ( 'JEM_SF_DOMAIN', 'http://www.sellfiredev.com:81' );
+define ( 'JEM_SF_DOMAIN', 'http://www.sellfire.com' );
 
 //SF API Domain
-define ( 'JEM_SF_API_DOMAIN', 'http://www.sellfiredev.com:81' );
+define ( 'JEM_SF_API_DOMAIN', 'https://www.sellfire.com' );
 
 //url of the SF API
 define( 'JEM_SF_API_URL', JEM_SF_API_DOMAIN . '/Api/' );
@@ -77,7 +77,7 @@ define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
 define( 'JEM_SF_INSERTCSS', plugin_dir_url(__FILE__).'css' );
 
 //define a version number to communicate with the mother ship
-define('JEM_SF_VERSION', '2.5');
+define('JEM_SF_VERSION', '2.6');
 
 //include the definition of the post meta box
 include( 'includes/post-meta-box.php' );
