@@ -5,7 +5,7 @@
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog.
  * Author: Jason MacInnes
- * Version: 2.5
+ * Version: 2.6
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
@@ -108,6 +108,7 @@ function jem_sf_deactivate() {
 function jem_sf_initialize_options() {
     
     jem_sf_getSiteId();
+    
     $options = get_option( 'jem_sf_options' );    
     
     //jem_sf_create_product_page($options);
@@ -123,8 +124,10 @@ function jem_sf_initialize_options() {
         $options['pp_image_width'] = 250;        
     }
     
-    $options['direct_echo'] = true;
-    
+    if ($options['direct_echo'] == null || $options['direct_echo'] == '') {
+        $options['direct_echo'] = false;
+    }
+        
     update_option('jem_sf_options', $options);    
 }
 
@@ -292,10 +295,21 @@ function jem_sf_sellfire_shortcode($attr) {
         set_transient(jem_sf_sellfire_transient_code($attr["id"]), $store_content, 300);
     }
     $options = get_option( 'jem_sf_options' );
-    if ($options['direct_echo'] || $_GET['sfecho'] == '1')
+    
+    return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);
+
+}
+
+/*
+ * Outputs store content. Handles with to directly echo it or use it 
+ * as a normal short code
+ */
+function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_echo) {
+    
+    if ($direct_echo || $_GET['sfecho'] == '1')
     {
-        echo $store_content;
-        return "";
+        echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none'/>" . $store_content . "</div>"; 
+        return "<div id='divSfStoreFinal'" . $store_id . "></div><script type='text/javascript'>jQuery(document).ready(function(){jQuery('#divSfStoreTemp" . $store_id . "').appendTo('#divSfStoreFinal').toggle(true);})</script>";
     }
     else        
     {
@@ -316,7 +330,7 @@ function jem_sf_sellfire_quick_shortcode($attr) {
     $transientCode =jem_sf_sellfire_quick_transient_code($postId, $jemSfShortCodeSequence);
     $store_content = get_transient($transientCode);
 
-    if (!$store_content || current_user_can('edit_posts'))
+    if (!$store_content || current_user_can("edit_posts"))
     {
         $options = get_option( 'jem_sf_options' );
         $product_page_root = get_home_url();
@@ -337,16 +351,7 @@ function jem_sf_sellfire_quick_shortcode($attr) {
     }
     $jemSfShortCodeSequence++;
     $options = get_option( 'jem_sf_options' );
-    if ($options['direct_echo'] || $_GET['sfecho'] == '1')
-    {
-        echo $store_content;
-        return "";
-    }
-    else        
-    {
-        return $store_content;
-    }
-    
+    return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);    
 }
 
 /*
@@ -424,6 +429,7 @@ function jem_sf_add_blog_scripts() {
     {        
         wp_enqueue_style( 'jem_sf_productcssscript', JEM_SF_INSERTCSS . '/sellfire-product-page.css?sfversion=2.4' );
     }
+    wp_enqueue_script( 'jquery' );
 }
 
 
