@@ -309,7 +309,8 @@ function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_ec
     if ($direct_echo || $_GET['sfecho'] == '1')
     {
         echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none'/>" . $store_content . "</div>"; 
-        return "<div id='divSfStoreFinal'" . $store_id . "></div><script type='text/javascript'>jQuery(document).ready(function(){jQuery('#divSfStoreTemp" . $store_id . "').appendTo('#divSfStoreFinal').toggle(true);})</script>";
+        echo "<script type='text/javascript'>jQuery(document).ready(function(){jQuery('#divSfStoreTemp" . $store_id . "').appendTo('#divSfStoreFinal').toggle(true);})</script>";
+        return "<div id='divSfStoreFinal'" . $store_id . "></div>";
     }
     else        
     {
