@@ -3,7 +3,7 @@ Contributors: jmacinnes
 Donate link: http://www.sellfire.com/
 Tags: affiliate marketing, affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr, premiumpress, couponpress, amazon
 Requires at least: 3.0
-Tested up to: 3.4.2
+Tested up to: 3.5
 Stable tag: 2.7
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.

@@ -308,9 +308,8 @@ function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_ec
     
     if ($direct_echo || $_GET['sfecho'] == '1')
     {
-        echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none'/>" . $store_content . "</div>"; 
-        echo "<script type='text/javascript'>jQuery(document).ready(function(){jQuery('#divSfStoreTemp" . $store_id . "').appendTo('#divSfStoreFinal').toggle(true);})</script>";
-        return "<div id='divSfStoreFinal'" . $store_id . "></div>";
+        echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none' class='sf-temp-store-holder'/>" . $store_content . "</div>";        
+        return "<div id='divSfStore" . $store_id . "'></div>";
     }
     else        
     {
@@ -431,6 +430,7 @@ function jem_sf_add_blog_scripts() {
         wp_enqueue_style( 'jem_sf_productcssscript', JEM_SF_INSERTCSS . '/sellfire-product-page.css?sfversion=2.4' );
     }
     wp_enqueue_script( 'jquery' );
+    wp_enqueue_script( 'jem_sf_blog_jsscript', JEM_SF_INSERTJS . '/sellfire-blog.js?sfversion=2.4' );
 }
 
 
