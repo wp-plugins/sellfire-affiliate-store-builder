@@ -36,9 +36,9 @@ add_action( 'template_redirect', 'jem_sf_set_product_page_variable');
 
 add_filter('query_vars', 'jem_sf_add_query_var');
 
-add_filter('the_title', 'jem_sf_add_product_page_title', 10, 2);
+//add_filter('the_title', 'jem_sf_add_product_page_title', 10, 2);
 
-add_filter('wp_title', 'jem_sf_add_product_page_title_tag', 10, 3);
+//add_filter('wp_title', 'jem_sf_add_product_page_title_tag', 10, 3);
 
 add_filter("wp_list_pages_excludes", "jem_sf_filter_product_page_from_list");
 
