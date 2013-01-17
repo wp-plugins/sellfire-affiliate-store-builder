@@ -4,7 +4,7 @@ Donate link: http://www.sellfire.com/
 Tags: affiliate marketing, affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr, premiumpress, couponpress, amazon
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.7
+Stable tag: 2.8
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
@@ -13,12 +13,13 @@ The SellFire Affiliate Store Builder Plugin gives affiliates an easy way to add 
 
 When you use [SellFire](http://www.sellfire.com "Affiliate Store Builder"), you do not need to download or import large data feed files or use a different tool for each affiliate network. You simply use SellFire.
 
-* Search nearly 50 million product advertisements and over 15,000 affiliate coupons and deals. 
-* Easily create custom advertisement displays to add to your blog posts or pages with our one of a kind point and click design studio.
+* Search nearly 60 million product advertisements and over 18,000 affiliate coupons and deals. 
+* Easily create custom product and coupon galleries to add to your blog posts or pages with our one of a kind point and click design studio.
 * All product and coupon links will automatically have your affiliate IDs embedded into them.
 * Check out our demo site, [The Purser's Desk](http://demo1.sellfire.com/thepursersdesk "SellFire Affiliate WordPress Plugin Demo Site")
+* Automatically creates a product page for every product that is included in your SellFire product galleries. 
 
-SellFire has integrated with the largest affiliate networks in the world and has products and coupons from almost 3,000 merchants. We currently work with:
+SellFire has integrated with the largest affiliate networks in the world and has products and coupons from over 3,000 merchants. We currently work with:
 
 * Commission Junction
 * Link Share
@@ -89,10 +90,14 @@ one will be created for you automatically.
 * Fixed issue with page editor caused by bad HTML introduced in 2.3
 
 = 2.5 = 
-* Improving plugin compatibility with various themes
+* Improving plug-in compatibility with various themes
 
-= 2.6 = 
-* Compatibility improvements
+= 2.6 =
+* Bug fixes
 
 = 2.7 = 
-* Further theme compatibility improvements
+* Bug fixes
+
+= 2.8 =
+* Launched product pages
+* Launched facetted search

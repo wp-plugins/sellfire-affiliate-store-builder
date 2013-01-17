@@ -17,9 +17,9 @@
 
 <table cellspacing="0" cellpadding="0" border="0" style="border: none; vertical-align: top; padding-top: 10px; padding-bottom: 10px" class="sfpp-product-overview">
     <tr>
-        <td style="padding-right: 20px; border: none;">
+        <td style="padding-right: 20px; border: none; vertical-align: top; min-width: <?php echo $image_width ?>px">
             <a href="<?php echo $pp->MainProduct->Url ?>" style="border: none">
-                <img src="<?php echo $pp->PrimaryImage ?>" alt="<?php echo $pp->MainProduct->Name ?>" width="<?php echo $image_width ?>px">
+                <img src="<?php echo $pp->PrimaryImage ?>" alt="<?php echo $pp->MainProduct->Name ?>" width="<?php echo $image_width ?>px" style="min-width: <?php echo $image_width ?> px"/>
             </a>
         </td>
         <td style="vertical-align: top; border: none;">
@@ -31,8 +31,12 @@
                         <?php echo $button_text ?>
                     </a>                    
                 </div>
-            </div>        
-            <div style="text-align: right; margin-left: auto; padding-top: 10px;">
+            </div>                    
+        </td>
+    </tr>
+    <tr>
+        <td style="border: none" colspan="2">
+            <div style="padding-top: 10px; float: right; min-width: 375px">
                 <!-- AddThis Button BEGIN -->
                 <div class="addthis_toolbox addthis_default_style ">
                 <a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
@@ -42,14 +46,17 @@
                 </div>
                 <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=xa-50ca584d7d3a9ff2"></script>
                 <!-- AddThis Button END -->
-            </div>            
+            </div>                        
+            <div style="clear: both"></div>
         </td>
     </tr>
 </table>
 
 <hr/>
 
-<h2 class="sfpp-header"><?php echo $merchant_header ?></h2>
+<div style="padding-top: 10px">
+    <h2 class="sfpp-header"><?php echo $merchant_header ?></h2>
+</div>
 <div style="padding-top: 10px">
     <table cellpadding="0" cellspacing="0" border="0" style="border: none;">
         <?php 
@@ -62,7 +69,7 @@
                         <?php 
                             if ($product->Merchant->LogoUrl)
                             {
-                                echo '<img src="' . $product->Merchant->LogoUrl . '" alt="' . $product->Merchant->Name . '" width="150px"/>';                                
+                                echo '<img src="' . $product->Merchant->LogoUrl . '" alt="' . $product->Merchant->Name . '" width="100px"/>';                                
                             }
                             else
                             {
@@ -89,9 +96,12 @@
 <hr/>
 
 
-<h2 class="sfpp-header"><?php echo $xsell_header ?></h2>
 <div style="padding-top: 10px">
-    <table  cellpadding="0" cellspacing="0" border="0" id="sfpp-cross-sells">
+    <h2 class="sfpp-header"><?php echo $xsell_header ?></h2>
+</div>
+
+<div style="padding-top: 10px">
+    <table  cellpadding="0" cellspacing="0" border="0" id="sfpp-cross-sells" style="width: 100%">
         <?php 
         $cross_sell_row = array();
         for ($i = 0; $i < $max_cross_sells; $i++)
@@ -100,7 +110,7 @@
             $cross_sell_row[] = $product;
             if (sizeof($cross_sell_row) == $cross_sell_columns || $i == ($max_cross_sells - 1))
             {
-                jem_sf_render_crosssell_row($cross_sell_row, $xsell_img, $i == ($max_cross_sells - 1));
+                jem_sf_render_crosssell_row($cross_sell_row, $xsell_img, $i == ($max_cross_sells - 1), $cross_sell_columns);
                 $cross_sell_row = array();
             }
         }
@@ -112,10 +122,11 @@
      
 <?php
 
-function jem_sf_render_crosssell_row($products, $xsell_img, $last_row){    
+function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_columns){    
     echo '<tr class="sfpp-xsell-name-row">';
     $product_count = sizeof($products);
     $i = 0;
+    $cell_width = floor(98/$num_columns) . "%";
     foreach ($products as $product)
     {
         $i++;
@@ -124,13 +135,22 @@ function jem_sf_render_crosssell_row($products, $xsell_img, $last_row){
         {
             $cell_class = 'sf-outer-xsell';
         }        
+        
         ?>
-        <td style="vertical-align: top;  text-align: center; padding-top: 10px;" class="<?php echo $cell_class ?>">
-            <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name">
-                <?php echo $product->Name ?>    
-            </a>                    
+        <td style="vertical-align: top;  text-align: center; padding-top: 10px; width: <?php echo $cell_width ?>" class="<?php echo $cell_class ?>">
+            <div class="sf-xsell-side-margin">
+                <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name">
+                    <?php echo $product->Name ?>    
+                </a>  
+            </div>                              
         </td>                                  
         <?php        
+    }
+    for ($i = $product_count; $i < $num_columns; $i++)
+    {
+        ?>
+        <td></td>
+        <?php
     }
     echo '</tr>';
     echo '<tr class="sfpp-xsell-image-row">';
@@ -145,11 +165,20 @@ function jem_sf_render_crosssell_row($products, $xsell_img, $last_row){
         }          
         ?>
         <td style="vertical-align: top; text-align: center; padding-bottom: 10px;" class="<?php echo $cell_class ?>">
-            <a href="<?php echo $product->Url ?>" style="border: none">
-                <img src="<?php echo $product->SmallImageUrl ?>" border="0" width="<?php echo $xsell_img ?>px" style="border: none;" class="sfpp-xsell-image"/>                    
-            </a>                                        
+            <div class="sf-xsell-side-margin">
+                <a href="<?php echo $product->Url ?>" style="border: none">
+                    <img src="<?php echo $product->SmallImageUrl ?>" border="0" width="<?php echo $xsell_img ?>px" style="border: none;" class="sfpp-xsell-image"/>                    
+                </a>    
+            </div>
+                                                    
         </td>                                
         <?php        
+    }
+    for ($i = $product_count; $i < $num_columns; $i++)
+    {
+        ?>
+        <td></td>
+        <?php
     }
     echo '</tr>';    
     echo '<tr clas="sfpp-xsell-price-row">';
@@ -167,10 +196,18 @@ function jem_sf_render_crosssell_row($products, $xsell_img, $last_row){
             $cell_class = $cell_class . ' sf-xsell-bottom';
         }
         ?>
-        <td style="vertical-align: top; text-align: right" class="<?php echo $cell_class ?>">
-            <?php jem_sf_renderPrice($product) ?>
+        <td style="vertical-align: top; text-align: right" class="<?php echo $cell_class ?>">            
+            <div class="sf-xsell-side-margin sf-xsell-bottom-margin">
+                <?php jem_sf_renderPrice($product) ?>
+            </div>
         </td>   
         <?php        
+    }
+    for ($i = $product_count; $i < $num_columns; $i++)
+    {
+        ?>
+        <td></td>
+        <?php
     }
     echo '</tr>';       
 }
@@ -179,7 +216,7 @@ function jem_sf_renderPrice($product)
 {
     if ($product->DiscountAmount > 0) 
     {
-        echo '<span class="sfpp-cross-out">' . $product->FormattedListPrice . '</span><span class="sfpp-sale-price">' . $product->FormattedPrice. '</span>';
+        echo '<span class="sfpp-crossout-price">' . $product->FormattedListPrice . '</span><span class="sfpp-sale-price">' . $product->FormattedPrice. '</span>';
     } 
     else 
     {    

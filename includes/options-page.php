@@ -1,7 +1,8 @@
     <?php
-        $jemOptions = jem_sf_getSiteId();    
-        $siteId = $jemOptions['site_id'];
-        $apiKey = $jemOptions['api_key'];
+        $options = get_option( 'jem_sf_options' );
+        jem_sf_getSiteId(&$options);
+        $siteId = $options['site_id'];
+        $apiKey = $options['api_key'];
         if (strrpos($url, '?'))
         {
             $url = $url . '&sfSiteId=' . $siteId;
@@ -37,8 +38,12 @@
                     Snap! There seems to be a problem. The plug-in tried to create
                     a new SellFire account for you, but it couldn't connect to SellFire.com. 
                     Refresh the page to try again. If the problem persists, please 
-                    e-mail <a href="mailto:support@sellfire.com">support@sellfire.com</a>.
+                    e-mail <a href="mailto:support@sellfire.com">support@sellfire.com</a> and include 
+                    the error information below in your message:
                 </p>                            
+                <pre>
+                    <?php echo print_r($reponse) ?>
+                </pre>
             <?php
             }
             else
@@ -50,8 +55,8 @@
                     Snap! There is a problem. The plug-in cannot communicate
                     with SellFire.com because your web server does not seem to
                     be allowing external communications. Please contact your
-                    web hosting provider and ask them to enable the PHP CURL
-                    command for your web server. If you have any questions
+                    web hosting provider and ask them to enable PHP CURL
+                    requests to www.sellfire.com. If you have any questions
                     please email <a href="mailto:support@sellfire.com">support@sellfire.com</a>.
                 </p>                 
                 

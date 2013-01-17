@@ -5,7 +5,18 @@
     $product_pages_enabled =  $features && $features->ProductPages;       
     
     $options = get_option('jem_sf_options');
-
+    
+    if (jem_sf_initialize_product_page_default(&$options))
+    {
+        update_option('jem_sf_options', $options);
+    }
+    
+    if (!jem_sf_get_and_validate_product_page($options))
+    {
+        jem_sf_create_product_page(&$options);        
+        update_option('jem_sf_options', $options);
+    } 
+    
     if ($_GET['pp_submitted'])
     {
         $pp_enabled = $_GET['pp_enabled'];
@@ -52,12 +63,13 @@
     
     if (!$product_pages_enabled)
     {
-        ?>
-        <p>
-            Product pages are not available for your account.
-            I will sell you product pages now.
-        </p>
-           
+        ?>        
+        <p>            
+            Product page functionality is not available for your account.
+            To enable product pages, please upgrade your subscription to the Professional, 
+            Premium, or Developer plan. To learn more about product pages,
+            please <a href="/features/product-pages">click here</a>.
+        </p>           
         <?php
         return;
     }    
@@ -69,7 +81,7 @@
             You can use this page to configure how they look and behave.
         </p>
         
-        <form method="GET" action="<?php echo $_SERVER['PHP_SELF']  ?>">
+        <form method="GET" action="<?php echo site_url() . '/wp-admin/admin.php' ?>">
             <h3 class="setting-heading">General</h3>
             <table class="product-page-setting"  cellpadding="0" cellspacing="0">
                 <tr class="alt">
