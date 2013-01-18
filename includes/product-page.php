@@ -65,7 +65,7 @@
             ?>
                 <tr>
                     <td style="border: none; width: 300px;">
-                        <a href="" >
+                        <a href="<?php echo $product->Url ?>" >
                         <?php 
                             if ($product->Merchant->LogoUrl)
                             {
