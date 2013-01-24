@@ -24,10 +24,16 @@
         $xsell_cols = $_GET['xsell_cols'];        
         $xsell_img = $_GET['xsell_img'];        
         $image_width = $_GET['image_width'];
+        $call_to_action_img = $_GET['call_to_action_img'];
+        $new_window = $_GET['new_window'] == "1";
         
         $options['pp_xsell_header'] = $_GET['xsell_header'];
         $options['pp_merchant_header']= $_GET['merchant_header'];
         $options['pp_button_text']= $_GET['button_text'];
+        
+        $options['pp_call_to_action_img']= $call_to_action_img;
+        
+        $options['pp_new_window']= $new_window;
         
         if (is_numeric($xsell_max))
         {
@@ -60,6 +66,8 @@
     $merchant_header = $options['pp_merchant_header'];
     $button_text = $options['pp_button_text'];    
     $image_width = $options['pp_image_width'];
+    $call_to_action_img = $options['pp_call_to_action_img'];
+    $new_window = $options['pp_new_window'];
     
     if (!$product_pages_enabled)
     {
@@ -105,7 +113,27 @@
                         </div>
                     </td>                        
                     </td>
-                </tr>                  
+                </tr>   
+                <tr class="alt">
+                    <td class="sf-setting-label">Buy Button Image URL:</td>
+                    <td>
+                        <input type="text" size="50" name="call_to_action_img" value="<?php echo $call_to_action_img ?>">
+                        <div>
+                            If you'd like to use an image to as your buy button, you can enter the location of the URL
+                        </div>
+                    </td>                        
+                    </td>
+                </tr>          
+                <tr>
+                    <td class="sf-setting-label">Open In New Window:</td>
+                    <td>
+                        <input type="checkbox" name="new_window" value="1" <?php echo $new_window ? "checked" : "" ?>>
+                        <div>
+                            Text that appears in a product page button
+                        </div>
+                    </td>                        
+                    </td>
+                </tr>                 
                 <tr class="alt">
                     <td class="sf-setting-label">Main Product Image Width:</td>
                     <td>
