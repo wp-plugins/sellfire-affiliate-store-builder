@@ -13,12 +13,15 @@
     $button_text = $options['pp_button_text'];   
     $merchant_header = $options['pp_merchant_header'];
     $image_width = $options['pp_image_width'];
+    $call_to_action_img = $options['pp_call_to_action_img'];
+    $new_window = $options['pp_new_window'];
+    $targetText = $new_window ? " target='_BLANK'" : "";
 ?>
 
 <table cellspacing="0" cellpadding="0" border="0" style="border: none; vertical-align: top; padding-top: 10px; padding-bottom: 10px" class="sfpp-product-overview">
     <tr>
         <td style="padding-right: 20px; border: none; vertical-align: top; min-width: <?php echo $image_width ?>px">
-            <a href="<?php echo $pp->MainProduct->Url ?>" style="border: none">
+            <a href="<?php echo $pp->MainProduct->Url ?>" style="border: none"<?php echo $targetText?>>
                 <img src="<?php echo $pp->PrimaryImage ?>" alt="<?php echo $pp->MainProduct->Name ?>" width="<?php echo $image_width ?>px" style="min-width: <?php echo $image_width ?> px"/>
             </a>
         </td>
@@ -27,9 +30,24 @@
             <div style="padding-top: 10px; text-align: right;">
                 <h3 class="sfpp-main-price"><?php echo $pp->MainProduct->FormattedPrice ?></h3>
                 <div style="padding: 10px 0 10px 0">
-                    <a href="<?php echo $pp->MainProduct->Url ?>" id="sfpp-button">
-                        <?php echo $button_text ?>
-                    </a>                    
+                    <?php
+                        if ($call_to_action_img != null && strlen($call_to_action_img) > 0)
+                        {
+                        ?>
+                            <a href="<?php echo $pp->MainProduct->Url ?>"<?php echo $targetText?> style="border: none">
+                                <img src="<?php echo $call_to_action_img ?>" style="border: none" alt="<?php echo $button_text ?>"/>
+                            </a>                      
+                        <?php
+                        }
+                        else
+                        {
+                        ?>
+                            <a href="<?php echo $pp->MainProduct->Url ?>" id="sfpp-button"<?php echo $targetText?>>
+                                <?php echo $button_text ?>
+                            </a>                      
+                        <?php
+                        }
+                    ?>                 
                 </div>
             </div>                    
         </td>
@@ -49,7 +67,7 @@
             ?>
                 <tr>
                     <td style="border: none; width: 300px;">
-                        <a href="<?php echo $product->Url ?>" >
+                        <a href="<?php echo $product->Url ?>"<?php echo $targetText?>>
                         <?php 
                             if ($product->Merchant->LogoUrl)
                             {
@@ -66,7 +84,7 @@
                         <?php jem_sf_renderPrice($product)  ?>
                     </td>                           
                     <td style="border: none; padding-left: 10px">
-                        <a href="<?php echo $product->Url ?>" style="white-space: nowrap" class="sfpp-secondary-button">
+                        <a href="<?php echo $product->Url ?>" style="white-space: nowrap" class="sfpp-secondary-button"<?php echo $targetText?>>
                             <?php echo $button_text ?>
                         </a>
                     </td>                       
@@ -94,7 +112,7 @@
             $cross_sell_row[] = $product;
             if (sizeof($cross_sell_row) == $cross_sell_columns || $i == ($max_cross_sells - 1))
             {
-                jem_sf_render_crosssell_row($cross_sell_row, $xsell_img, $i == ($max_cross_sells - 1), $cross_sell_columns);
+                jem_sf_render_crosssell_row($cross_sell_row, $xsell_img, $i == ($max_cross_sells - 1), $cross_sell_columns, $targetText);
                 $cross_sell_row = array();
             }
         }
@@ -106,7 +124,7 @@
      
 <?php
 
-function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_columns){    
+function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_columns, $targetText){    
     echo '<tr class="sfpp-xsell-name-row">';
     $product_count = sizeof($products);
     $i = 0;
@@ -123,7 +141,7 @@ function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_colu
         ?>
         <td style="vertical-align: top;  text-align: center; padding-top: 10px; width: <?php echo $cell_width ?>" class="<?php echo $cell_class ?>">
             <div class="sf-xsell-side-margin">
-                <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name">
+                <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name"<?php echo $targetText?>>
                     <?php echo $product->Name ?>    
                 </a>  
             </div>                              
@@ -150,7 +168,7 @@ function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_colu
         ?>
         <td style="vertical-align: top; text-align: center; padding-bottom: 10px;" class="<?php echo $cell_class ?>">
             <div class="sf-xsell-side-margin">
-                <a href="<?php echo $product->Url ?>" style="border: none">
+                <a href="<?php echo $product->Url ?>" style="border: none"<?php echo $targetText?>>
                     <img src="<?php echo $product->SmallImageUrl ?>" border="0" width="<?php echo $xsell_img ?>px" style="border: none;" class="sfpp-xsell-image"/>                    
                 </a>    
             </div>

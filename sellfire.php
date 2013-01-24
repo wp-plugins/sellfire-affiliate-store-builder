@@ -130,6 +130,7 @@ function jem_sf_initialize_product_page_default($options) {
         $options['pp_xsell_cols'] = 2;
         $options['pp_xsell_img'] = 150;
         $options['pp_image_width'] = 250;     
+        $options['pp_call_to_action_img'] = '';     
         return true;
     }    
     return false;
@@ -193,7 +194,15 @@ function jem_sf_set_product_page_variable() {
     
     if ($product_page_id == null || $product_page_id == '')
     {
-        return;
+        preg_match('/sf-product\/(.*)\/(.*)/', $_SERVER['REQUEST_URI'], $re);
+        if ($re && count($re) > 2)
+        {
+            $product_page_id = $re[1];
+        }
+        else
+        {
+            return;
+        }
     }
     
     $post_values = array();
