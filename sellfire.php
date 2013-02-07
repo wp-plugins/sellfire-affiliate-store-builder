@@ -36,6 +36,8 @@ add_action( 'template_redirect', 'jem_sf_set_product_page_variable');
 
 add_filter('query_vars', 'jem_sf_add_query_var');
 
+add_filter('init', 'jem_sf_add_rules');
+
 add_filter('the_title', 'jem_sf_get_product_page_title', 10, 2);
 
 add_filter('wp_title', 'jem_sf_add_product_page_title_tag', 10, 3);
@@ -131,6 +133,7 @@ function jem_sf_initialize_product_page_default($options) {
         $options['pp_xsell_img'] = 150;
         $options['pp_image_width'] = 250;     
         $options['pp_call_to_action_img'] = '';     
+        $options['pp_new_window'] = true;    
         return true;
     }    
     return false;
@@ -138,9 +141,9 @@ function jem_sf_initialize_product_page_default($options) {
 
 function jem_sf_add_rules() {        
     $redirect_url = 'index.php?pagename=sf-product&sfpid=$matches[1]&sfProdName=$matches[2]';            
-    add_rewrite_rule('sf-product/([^/]*)/([^/]*)/?', $redirect_url, 'top');
-    add_rewrite_rule('sf-product-lookup/([^/]*)/([^/]*)/?', $redirect_url, 'top');    
-    flush_rewrite_rules();    
+    add_rewrite_tag('%sfpid%','([^&]+)');
+    add_rewrite_tag('%sfProdName%','([^&]+)');
+    add_rewrite_rule('sf-product/([^/]*)/([^/]*)/?', $redirect_url, 'top');   
 }
 
 function jem_sf_redirect_to_product_page() {
@@ -451,6 +454,10 @@ function jem_sf_sellfire_quick_shortcode($attr) {
  */
 function jem_sf_sellfire_product_page_shortcode($attr) {    
     global $jem_sf_product_page;    
+    if ($jem_sf_product_page == null)
+    {
+        return "";
+    }
     include('includes/product-page.php');
     return "";
 }
