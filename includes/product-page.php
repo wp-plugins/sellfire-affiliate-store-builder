@@ -16,8 +16,115 @@
     $call_to_action_img = $options['pp_call_to_action_img'];
     $new_window = $options['pp_new_window'];
     $targetText = $new_window ? " target='_BLANK'" : "";
+
+    if (!function_exists('jem_sf_render_crosssell_row'))
+    {
+        function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_columns, $targetText){    
+            echo '<tr class="sfpp-xsell-name-row">';
+            $product_count = sizeof($products);
+            $i = 0;
+            $cell_width = floor(98/$num_columns) . "%";
+            foreach ($products as $product)
+            {
+                $i++;
+                $cell_class = 'sf-inner-xsell';
+                if ($i == $product_count)
+                {
+                    $cell_class = 'sf-outer-xsell';
+                }        
+
+                ?>
+                <td style="vertical-align: top;  text-align: center; padding-top: 10px; width: <?php echo $cell_width ?>" class="<?php echo $cell_class ?>">
+                    <div class="sf-xsell-side-margin">
+                        <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name"<?php echo $targetText?>>
+                            <?php echo $product->Name ?>    
+                        </a>  
+                    </div>                              
+                </td>                                  
+                <?php        
+            }
+            for ($i = $product_count; $i < $num_columns; $i++)
+            {
+                ?>
+                <td></td>
+                <?php
+            }
+            echo '</tr>';
+            echo '<tr class="sfpp-xsell-image-row">';
+            $i = 0;
+            foreach ($products as $product)
+            {
+                $i++;
+                $cell_class = 'sf-inner-xsell';
+                if ($i == $product_count)
+                {
+                    $cell_class = 'sf-outer-xsell';
+                }          
+                ?>
+                <td style="vertical-align: top; text-align: center; padding-bottom: 10px;" class="<?php echo $cell_class ?>">
+                    <div class="sf-xsell-side-margin">
+                        <a href="<?php echo $product->Url ?>" style="border: none"<?php echo $targetText?>>
+                            <img src="<?php echo $product->SmallImageUrl ?>" border="0" width="<?php echo $xsell_img ?>px" style="border: none;" class="sfpp-xsell-image"/>                    
+                        </a>    
+                    </div>
+
+                </td>                                
+                <?php        
+            }
+            for ($i = $product_count; $i < $num_columns; $i++)
+            {
+                ?>
+                <td></td>
+                <?php
+            }
+            echo '</tr>';    
+            echo '<tr clas="sfpp-xsell-price-row">';
+            $i = 0;
+            foreach ($products as $product)
+            {
+                $i++;
+                $cell_class = 'sf-inner-xsell';
+                if ($i == $product_count)
+                {
+                    $cell_class = 'sf-outer-xsell';
+                }          
+                if (!$last_row)
+                {
+                    $cell_class = $cell_class . ' sf-xsell-bottom';
+                }
+                ?>
+                <td style="vertical-align: top; text-align: right" class="<?php echo $cell_class ?>">            
+                    <div class="sf-xsell-side-margin sf-xsell-bottom-margin">
+                        <?php jem_sf_renderPrice($product) ?>
+                    </div>
+                </td>   
+                <?php        
+            }
+            for ($i = $product_count; $i < $num_columns; $i++)
+            {
+                ?>
+                <td></td>
+                <?php
+            }
+            echo '</tr>';       
+        }
+
+        function jem_sf_renderPrice($product) 
+        {
+            if ($product->DiscountAmount > 0) 
+            {
+                echo '<span class="sfpp-crossout-price">' . $product->FormattedListPrice . '</span><span class="sfpp-sale-price">' . $product->FormattedPrice. '</span>';
+            } 
+            else 
+            {    
+                echo '<span class="sfpp-nonsale-price">' . $product->FormattedPrice . '</span>';
+            }    
+        }            
+    }
 ?>
 
+<div id="divSfProductPage">
+    
 <table cellspacing="0" cellpadding="0" border="0" style="border: none; vertical-align: top; padding-top: 10px; padding-bottom: 10px" class="sfpp-product-overview">
     <tr>
         <td style="padding-right: 20px; border: none; vertical-align: top; min-width: <?php echo $image_width ?>px">
@@ -121,111 +228,9 @@
 </div>
 
 <img src="http://www.sfafflinks.com/StoreDisplay/LogProductPageView?id=<?php echo $pp->Id ?>" width="1px" height="1px"/>
-     
-<?php
 
-function jem_sf_render_crosssell_row($products, $xsell_img, $last_row, $num_columns, $targetText){    
-    echo '<tr class="sfpp-xsell-name-row">';
-    $product_count = sizeof($products);
-    $i = 0;
-    $cell_width = floor(98/$num_columns) . "%";
-    foreach ($products as $product)
-    {
-        $i++;
-        $cell_class = 'sf-inner-xsell';
-        if ($i == $product_count)
-        {
-            $cell_class = 'sf-outer-xsell';
-        }        
-        
-        ?>
-        <td style="vertical-align: top;  text-align: center; padding-top: 10px; width: <?php echo $cell_width ?>" class="<?php echo $cell_class ?>">
-            <div class="sf-xsell-side-margin">
-                <a href="<?php echo $product->Url ?>" class="sfpp-xsell-name"<?php echo $targetText?>>
-                    <?php echo $product->Name ?>    
-                </a>  
-            </div>                              
-        </td>                                  
-        <?php        
-    }
-    for ($i = $product_count; $i < $num_columns; $i++)
-    {
-        ?>
-        <td></td>
-        <?php
-    }
-    echo '</tr>';
-    echo '<tr class="sfpp-xsell-image-row">';
-    $i = 0;
-    foreach ($products as $product)
-    {
-        $i++;
-        $cell_class = 'sf-inner-xsell';
-        if ($i == $product_count)
-        {
-            $cell_class = 'sf-outer-xsell';
-        }          
-        ?>
-        <td style="vertical-align: top; text-align: center; padding-bottom: 10px;" class="<?php echo $cell_class ?>">
-            <div class="sf-xsell-side-margin">
-                <a href="<?php echo $product->Url ?>" style="border: none"<?php echo $targetText?>>
-                    <img src="<?php echo $product->SmallImageUrl ?>" border="0" width="<?php echo $xsell_img ?>px" style="border: none;" class="sfpp-xsell-image"/>                    
-                </a>    
-            </div>
-                                                    
-        </td>                                
-        <?php        
-    }
-    for ($i = $product_count; $i < $num_columns; $i++)
-    {
-        ?>
-        <td></td>
-        <?php
-    }
-    echo '</tr>';    
-    echo '<tr clas="sfpp-xsell-price-row">';
-    $i = 0;
-    foreach ($products as $product)
-    {
-        $i++;
-        $cell_class = 'sf-inner-xsell';
-        if ($i == $product_count)
-        {
-            $cell_class = 'sf-outer-xsell';
-        }          
-        if (!$last_row)
-        {
-            $cell_class = $cell_class . ' sf-xsell-bottom';
-        }
-        ?>
-        <td style="vertical-align: top; text-align: right" class="<?php echo $cell_class ?>">            
-            <div class="sf-xsell-side-margin sf-xsell-bottom-margin">
-                <?php jem_sf_renderPrice($product) ?>
-            </div>
-        </td>   
-        <?php        
-    }
-    for ($i = $product_count; $i < $num_columns; $i++)
-    {
-        ?>
-        <td></td>
-        <?php
-    }
-    echo '</tr>';       
-}
+</div>     
 
-function jem_sf_renderPrice($product) 
-{
-    if ($product->DiscountAmount > 0) 
-    {
-        echo '<span class="sfpp-crossout-price">' . $product->FormattedListPrice . '</span><span class="sfpp-sale-price">' . $product->FormattedPrice. '</span>';
-    } 
-    else 
-    {    
-        echo '<span class="sfpp-nonsale-price">' . $product->FormattedPrice . '</span>';
-    }    
-}
-?>
 
  
                 
