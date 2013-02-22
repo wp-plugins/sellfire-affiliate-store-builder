@@ -5,13 +5,19 @@
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog.
  * Author: Jason MacInnes
- * Version: 2.8
+ * Version: 2.9
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
 register_activation_hook(__FILE__, 'jem_sf_install');
 
 register_deactivation_hook(__FILE__, 'jem_sf_deactivate');
+
+//functions for importing to premium press
+include( 'includes/premium-press.php' );
+
+//functions for importing to woo commerce
+include( 'includes/woo-commerce-import.php' );
 
 //adds the menu
 add_action('admin_menu', 'jem_sf_add_menus');
@@ -21,6 +27,12 @@ add_action ( 'wp_ajax_jem_sf_flush_cache', 'jem_sf_flush_cache' );
 
 //registers the set api key
 add_action ( 'wp_ajax_jem_sf_set_api_key', 'jem_sf_set_api_key' );
+
+//registers an action to export to PP
+add_action ( 'wp_ajax_jem_sf_store_export_pp', 'jem_sf_store_export_pp' );
+
+//registers an action to import to woocomerce
+add_action ( 'wp_ajax_jem_sf_import_woocommerce_action', 'jem_sf_import_woocommerce_action' );
 
 //registers the redirect that looks up a page for a store and redirects to the
 //edit page
@@ -76,7 +88,7 @@ define( 'JEM_SF_INSERTJS', plugin_dir_url(__FILE__).'js' );
 define( 'JEM_SF_INSERTCSS', plugin_dir_url(__FILE__).'css' );
 
 //define a version number to communicate with the mother ship
-define('JEM_SF_VERSION', '2.8');
+define('JEM_SF_VERSION', '2.9');
 
 //include the definition of the post meta box
 include( 'includes/post-meta-box.php' );
@@ -108,12 +120,8 @@ function jem_sf_initialize_options() {
     
     $options = get_option( 'jem_sf_options' );    
     
-    jem_sf_getSiteId(&$options);
-    
-    jem_sf_create_product_page(&$options);
-    
-    jem_sf_initialize_product_page_default(&$options); 
-        
+    jem_sf_getSiteId(&$options);   
+            
     if ($options['direct_echo'] == null || $options['direct_echo'] == '') {
         $options['direct_echo'] = false;
     }
@@ -139,11 +147,29 @@ function jem_sf_initialize_product_page_default($options) {
     return false;
 }
 
-function jem_sf_add_rules() {        
-    $redirect_url = 'index.php?pagename=sf-product&sfpid=$matches[1]&sfProdName=$matches[2]';            
-    add_rewrite_tag('%sfpid%','([^&]+)');
-    add_rewrite_tag('%sfProdName%','([^&]+)');
-    add_rewrite_rule('sf-product/([^/]*)/([^/]*)/?', $redirect_url, 'top');   
+function jem_sf_add_rules() {    
+
+    $options = get_option( 'jem_sf_options' );    
+    if ($options['product_page_id'])
+    {
+        $permalink = jem_sf_get_product_page_permalink($options['product_page_id']); 
+        
+        //trim leading /
+        $permalink = substr($permalink, 1);
+        
+        //trim trailing /
+        $permalink = substr_replace($permalink ,"",-1);
+        
+        $redirect_url = 'index.php?pagename=' . $permalink . '&sfpid=$matches[1]&sfProdName=$matches[2]';            
+        add_rewrite_tag('%sfpid%','([^&]+)');
+        add_rewrite_tag('%sfProdName%','([^&]+)');
+        add_rewrite_rule($permalink . '/([^/]*)/([^/]*)/?', $redirect_url, 'top');
+    }
+}
+
+function jem_sf_get_product_page_permalink($product_page_id) {
+    $permalink = get_permalink($product_page_id);
+    return parse_url($permalink, PHP_URL_PATH);
 }
 
 function jem_sf_redirect_to_product_page() {
@@ -170,7 +196,9 @@ function jem_sf_redirect_to_product_page() {
         }
         else
         {
-            wp_redirect(get_home_url(null, '/sf-product/' . $product_page_id . '/' . $product_name), 301);
+            $options = get_option('jem_sf_options');
+            $redirect_url = get_home_url(null, jem_sf_get_product_page_permalink($options['product_page_id']) . $product_page_id . '/' . $product_name);
+            wp_redirect($redirect_url, 301);
         }                        
         die();
     }
@@ -179,10 +207,12 @@ function jem_sf_redirect_to_product_page() {
 function jem_sf_filter_permalink($permalink) {  
     $product_page_id = get_query_var( 'sfpid' );
     $product_name = get_query_var( 'sfProdName' );
-    if ($product_page_id && stripos($permalink, '/sf-product') > 0) 
+    if ($product_page_id) 
     {        
-        $replace_url = '/sf-product/' . $product_page_id . '/' . $product_name;
-        $permalink = str_replace($permalink, '/sf-product', $replace_url);
+        $options = get_option( 'jem_sf_options' );    
+        $product_page_link = jem_sf_get_product_page_permalink($options['product_page_id']);
+        $replace_url = $product_page_link . $product_page_id . '/' . $product_name;
+        $permalink = str_replace($permalink, $product_page_link, $replace_url);
     }
     return $permalink;    
 }
@@ -193,21 +223,7 @@ function jem_sf_filter_permalink($permalink) {
  */
 function jem_sf_set_product_page_variable() {
     
-    $product_page_id = get_query_var( 'sfpid' );    
-    
-    if ($product_page_id == null || $product_page_id == '')
-    {
-        preg_match('/sf-product\/(.*)\/(.*)/', $_SERVER['REQUEST_URI'], $re);
-        if ($re && count($re) > 2)
-        {
-            $product_page_id = $re[1];
-        }
-        else
-        {
-            return;
-        }
-    }
-    
+    $product_page_id = get_query_var( 'sfpid' );
     $post_values = array();
     global $jem_sf_product_page;
     $post_values['productPageId'] = $product_page_id;
@@ -229,7 +245,7 @@ function jem_sf_add_query_var($vars) {
 /*
  * Changes the name of the product page's H1 tag
  */
-function jem_sf_get_product_page_title($title, $id) {    
+function jem_sf_get_product_page_title() {    
     global $jem_sf_product_page;    
     $num_args = func_num_args();
     if (num_args < 2)
@@ -344,17 +360,17 @@ function jem_sf_create_product_page($options) {
     
     if ($product_page_id == null || $product_page_id == '')
     {
-        $user = wp_get_current_user();
+        $user = wp_get_current_user();                          
         $post = array();
         $post['post_author'] = $user->ID;
         $post['post_content'] = '[sellfirepp]';
-        $post['post_name'] = 'sf-product';
+        $post['post_name'] = 'product';
         $post['post_status'] = 'publish';
-        $post['post_title'] = 'SellFire Product Page - DO NOT DELETE';
-        $post['post_type'] = 'page';            
-    }
+        $post['post_title'] = 'SellFire Product Page - Do Not Delete';
+        $post['post_type'] = 'page';                    
+        $product_page_id = wp_insert_post($post);
+    }    
     
-    $product_page_id = wp_insert_post($post);
     $options['product_page_id'] = $product_page_id;
     return $product_page_id;
 }
@@ -366,7 +382,12 @@ function jem_sf_sellfire_shortcode($attr) {
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
     if (!$store_content || current_user_can('edit_posts'))
     {
-        $product_page_root = get_home_url(null, 'sf-product-lookup');
+        $options = get_option( 'jem_sf_options' );
+        $product_page_root = '';
+        if ($options['product_page_id'])
+        {
+            $product_page_root = get_home_url(null, 'sf-product-lookup');
+        }        
         $sf_url = JEM_SF_DOMAIN . '/StoreDisplay/EmbeddedStore?ppRoot=' . urlencode($product_page_root) . '&wpMode=true&logImpression=false&storeId=' . $attr["id"] . '&wpPluginVersion=' . JEM_SF_VERSION;
         $response = wp_remote_get($sf_url, jem_sf_get_default_http_args());
         if (is_wp_error($response) || wp_remote_retrieve_response_code(&$response) != 200)
@@ -375,9 +396,7 @@ function jem_sf_sellfire_shortcode($attr) {
         }
         $store_content = wp_remote_retrieve_body(&$response);
         set_transient(jem_sf_sellfire_transient_code($attr["id"]), $store_content, 300);
-    }
-    $options = get_option( 'jem_sf_options' );
-    
+    }             
     return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);
 }
 
@@ -459,7 +478,10 @@ function jem_sf_sellfire_product_page_shortcode($attr) {
         return "";
     }
     include('includes/product-page.php');
-    return "";
+    $productPageText = jem_sf_renderProductPage($jem_sf_product_page);    
+    $options = get_option( 'jem_sf_options' );
+    $direct_echo = $options['direct_echo'];
+    return jem_sf_output_store_for_shortcode($productPageText, 'SfProductPage', $direct_echo);    
 }
 
 /*
@@ -523,7 +545,7 @@ function jem_sf_add_scripts() {
 }
 
 function jem_sf_add_blog_scripts() {    
-    if (stripos(get_permalink(), '/sf-product') >= 0) 
+    if (get_query_var( 'sfpid' )) 
     {        
         wp_enqueue_style( 'jem_sf_productcssscript', JEM_SF_INSERTCSS . '/sellfire-product-page.css?sfversion=' . JEM_SF_VERSION );
     }
@@ -588,9 +610,7 @@ function jem_sf_merchants() {
 /*
  * Draws the merchants page
  */
-function jem_sf_site_overview() {
-    jem_sf_add_rules();
-    flush_rewrite_rules();          
+function jem_sf_site_overview() {      
     $url = '/WordPress/SiteOverview';
     include('includes/options-page.php');
 }

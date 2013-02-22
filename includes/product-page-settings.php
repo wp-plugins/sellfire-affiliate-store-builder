@@ -5,19 +5,31 @@
     $product_pages_enabled =  $features && $features->ProductPages;       
     
     $options = get_option('jem_sf_options');
-    
+
     if (jem_sf_initialize_product_page_default(&$options))
+    {
+        jem_sf_create_product_page(&$options);        
+        update_option('jem_sf_options', $options);
+    }
+    $product_page_activated = true;
+    
+    if (!jem_sf_get_and_validate_product_page($options))
+    {
+        $product_page_activated = false;
+    } 
+    else if (jem_sf_initialize_product_page_default(&$options))
     {
         update_option('jem_sf_options', $options);
     }
     
-    if (!jem_sf_get_and_validate_product_page($options))
+    if ($_GET['pp_activate'] && !$product_page_activated && $product_pages_enabled)
     {
         jem_sf_create_product_page(&$options);        
+        jem_sf_initialize_product_page_default(&$options);
         update_option('jem_sf_options', $options);
-    } 
-    
-    if ($_GET['pp_submitted'])
+        $product_page_activated = true;
+    }
+    else if ($_GET['pp_submitted'])
     {
         $pp_enabled = $_GET['pp_enabled'];
         $xsell_max = $_GET['xsell_max'];
@@ -80,8 +92,9 @@
         </p>           
         <?php
         return;
-    }    
-    
+    }
+    else if ($product_page_activated)
+    {
 ?>
 
         <p>
@@ -196,4 +209,24 @@
             
             <input type="submit" name="submit" id="submit" class="button button-primary" value="Save Changes">
         </form>
+        
+        <?php
+    }
+    else
+    {
+        ?>       
+        <form method="GET" action="<?php echo site_url() . '/wp-admin/admin.php' ?>">
+            <p>Product pages are not currently activated. Click the button below
+            to activate this feature.
+            </p>
+            <div>
+                <input type="hidden" name="pp_activate" value="1">
+                <input type="hidden" name="page" value="jem_sf_sellfire_product_pages"/>                
+                <input type="submit" value="Activate Product Pages"/>
+            </div>
+        </form>
+        <?php
+    }
+        
+    
         

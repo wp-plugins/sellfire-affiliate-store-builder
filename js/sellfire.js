@@ -155,6 +155,84 @@ function jemSfShowFlushMessage() {
     jQuery("#jem_sf_flush_message").html("Cache has been flushed");
 }
 
+var lastPPPageNumber = 0;
+ 
+function importWooCommerceStore(data) {
+    if (data.pageNumber == 1)
+    {
+        jQuery('#divSfPPID').dialog('open');
+        jQuery('#divSfPPIDImportInProgress').toggle(true);
+        jQuery('#divSfPPIDImportComplete').toggle(false);
+    }            
+    jQuery('#divSfPPIDCurrentPage').text(data.pageNumber);
+    var data = {
+        action: 'jem_sf_import_woocommerce_action',
+        storeId: data.storeId,
+        pageNumber: data.pageNumber
+    };
+    jQuery.get(jem_sf.ajaxurl, data, importWooCommerceResponse);    
+    return false;
+    
+}
+
+function importWooCommerceResponse(data) {
+    data = jQuery.parseJSON(data);
+    if (data.hasMore)
+    {
+        jQuery('#divSfPPIDImportCount').text(data.importedCount + parseInt(jQuery('#divSfPPIDImportCount').text(),10));
+        jQuery('#divSfPPIDTotalPages').text(data.totalPages);
+        data.pageNumber = parseInt(data.pageNumber, 10) + 1;
+        importWooCommerceStore(data);
+    }
+    else
+    {        
+        jQuery('#divSfPPIDImportInProgress').toggle(false);
+        jQuery('#divSfPPIDImportComplete').toggle(true);        
+    }
+} 
+
+var lastStoreType = '';
+function importPremiumPressStore(data) {
+    if (data.pageNumber == 1)
+    {
+        jQuery('#divSfPPID').dialog('open');
+        jQuery('#divSfPPIDImportInProgress').toggle(true);
+        jQuery('#divSfPPIDImportComplete').toggle(false);
+    }            
+
+
+    jQuery('#divSfPPIDCurrentPage').text(data.pageNumber);    
+    data = {
+        action: 'jem_sf_store_export_pp',
+        storeId: data.storeId,
+        storeType: data.storeType,
+        pageNumber: data.pageNumber
+    };
+    jQuery.get(jem_sf.ajaxurl, data, importPremiumPressResponse);    
+    return false;    
+} 
+
+function importPremiumPressResponse(data) {
+    data = jQuery.parseJSON(data);
+    if (data.hasMore)
+    {
+        jQuery('#divSfPPIDImportCount').text(data.importedCount + parseInt(jQuery('#divSfPPIDImportCount').text(),10));
+        jQuery('#divSfPPIDTotalPages').text(data.totalPages);        
+        data.pageNumber = parseInt(data.pageNumber, 10) + 1;
+        importPremiumPressStore(data);
+    }
+    else
+    {        
+        jQuery('#divSfPPIDImportInProgress').toggle(false);
+        jQuery('#divSfPPIDImportComplete').toggle(true);        
+    }
+}        
+
+function jemSfOptionsPageOnReady() {
+    var jElement = jQuery('#divSfPPID');
+    jElement.dialog({ autoOpen: false, modal: true, title: "Import from SellFire", minWidth: 600, dialogClass: 'wp-dialog' });
+}
+
 jQuery(document).ready(function() {
     var jElement = jQuery('#divSfQuickStoreDialog');
     if (jElement.length > 0)

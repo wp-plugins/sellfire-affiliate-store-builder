@@ -11,6 +11,14 @@
         {
             $url = $url . '?sfSiteId=' . $siteId;
         }
+        $couponPress = (jem_sf_coupon_press_import_enabled() ? "true" : "false");
+        $shopperPress = (jem_sf_shopper_press_import_enabled() ? 'true' : 'false');
+        $wooThemes = (jem_sf_woocommerce_enabled() ? 'true' : 'false');
+        $outer_frame_qs = 'version=' . JEM_SF_VERSION 
+                . '&couponPress=' . $couponPress
+                . '&shopperPress=' . $shopperPress
+                . '&wooThemes=' . $wooThemes;
+ 
         $url = urlencode($url);        
         $admin_page = get_admin_url();
         
@@ -71,7 +79,7 @@
     <script type="text/javascript">
         pageHeight  = jQuery(document).height();
         new easyXDM.Socket({            
-            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?RRFilter=disabled&version=<?php echo JEM_SF_VERSION ?>&url=<?php echo $url ?>&pageHeight=" + pageHeight,
+            remote: "<?php echo(JEM_SF_WP_URL) ?>OuterFrame?<?php echo $outer_frame_qs ?>&url=<?php echo $url ?>&pageHeight=" + pageHeight,
             container: document.getElementById("sfContainer"),
             onMessage: function (message, origin)
             {      
@@ -84,11 +92,20 @@
                 {
                     redirectToPage(message.data);
                 }                      
-                else if (message.messageType == 'ApiKey')
+                else if (message.messageType == 'ApiKey')                
                 {
                     setApiKey(message.data);
                 }                
+                else if (message.messageType == 'PremiumPressExport')
+                {
+                    importPremiumPressStore(message.data);
+                }                   
+                else if (message.messageType == 'WooCommerceExport')
+                {
+                    importWooCommerceStore(message.data);
+                }                  
             }                                  
+            
         });
         
         function setFrameHeight(height)
@@ -119,8 +136,9 @@
                 jem_sf.ajaxurl, 
                 {action: 'jem_sf_set_api_key', apiKey: keyData.ApiKey, siteId: keyData.SiteId}, 
                 function(){ document.location.reload(true) });
-        }
+        }                
         
+        jQuery(document).ready(jemSfOptionsPageOnReady);
     </script>
 
     <form method="get" action="<?php echo($admin_page) ?>" id="frmSendToEdit">
@@ -130,10 +148,27 @@
         <input type="hidden" name="jemSfEditPage" value="1">
         
     </form>
-    
-    <!---    
-    API KEY: <?php echo $apiKey ?>
-    SITE ID: <?php echo $siteId ?>
-    -->
+    <div id="divSfPPID" style="display: none; padding: 10px;">
+        <div id="divSfPPIDImportInProgress">
+            <h3 id="divSfPPIDHeader">Importing Your Store</h3>
+            <div style="text-align: center">
+                <img src="https://www.sellfire.com/images/graphical-buttons/ajax-loader.gif" height="66px" width="66px"/>
+            </div>
+            <div>
+                <span><strong>Importing Page</strong>:</span> <span id="divSfPPIDCurrentPage">1</span> of <span id="divSfPPIDTotalPages">Unknown</span>    
+            </div>
+            <div style="padding-top: 10px">
+                <strong>Imported:</strong> <span id="divSfPPIDImportCount">0</span> <span id="divSfPPEntityType">Items</span>
+            </div>                    
+        </div>
+        <div id="divSfPPIDImportComplete" style="display: none">
+            <h3>Import Complete</h3>
+            <p>Your items have been imported.</p>
+            <div style="text-align: center">
+                <button onclick="jQuery('#divSfPPID').dialog('close');return false;">Close</button>
+            </div>
+        </div>
+    </div>
+
 
     

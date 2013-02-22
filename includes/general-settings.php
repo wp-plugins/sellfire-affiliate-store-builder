@@ -63,7 +63,7 @@
                         <input type="checkbox" name="direct_echo" value="1" <?php echo $check_echo ?>>
                         <div>
                             Enabling this setting maximizes compatibility with WordPress themes.
-                            You should enable this setting if you your SellFire stores are not
+                            You should enable this setting if your SellFire stores are not
                             appearing correctly.
                         </div>
                     </td>                        
