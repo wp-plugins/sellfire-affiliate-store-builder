@@ -105,10 +105,10 @@ $jem_sf_product_page = null;
 function jem_sf_install() {
     jem_sf_initialize_options();
     jem_sf_add_rules();
-    flush_rewrite_rules();
+    flush_rewrite_rules();       
 }
 
-function jem_sf_deactivate() {
+function jem_sf_deactivate() {    
     flush_rewrite_rules();
 }
 
@@ -117,20 +117,20 @@ function jem_sf_deactivate() {
  * and retrieves their API key if they don't have one.
  */
 function jem_sf_initialize_options() {
-
-    $options = get_option( 'jem_sf_options' );
-
-    jem_sf_getSiteId(&$options);
-
+    
+    $options = get_option( 'jem_sf_options' );    
+    
+    jem_sf_getSiteId($options);   
+            
     if ($options['direct_echo'] == null || $options['direct_echo'] == '') {
         $options['direct_echo'] = false;
     }
-
-    update_option('jem_sf_options', $options);
+        
+    update_option('jem_sf_options', $options);    
 }
 
-function jem_sf_initialize_product_page_default($options) {
-
+function jem_sf_initialize_product_page_default(&$options) {
+    
     if (!$options['pp_button_text'] && !$options['pp_xsell_header'])
     {
         $options['pp_xsell_header'] = 'You might also like...';
@@ -139,31 +139,36 @@ function jem_sf_initialize_product_page_default($options) {
         $options['pp_xsell_max'] = 10;
         $options['pp_xsell_cols'] = 2;
         $options['pp_xsell_img'] = 150;
-        $options['pp_image_width'] = 250;
-        $options['pp_call_to_action_img'] = '';
-        $options['pp_new_window'] = true;
+        $options['pp_image_width'] = 250;     
+        $options['pp_call_to_action_img'] = '';     
+        $options['pp_new_window'] = true;    
         return true;
-    }
+    }    
     return false;
 }
 
-function jem_sf_add_rules() {
+function jem_sf_add_rules() {    
 
-    $options = get_option( 'jem_sf_options' );
+    $options = get_option( 'jem_sf_options' );    
     if ($options['product_page_id'])
     {
-        $permalink = jem_sf_get_product_page_permalink($options['product_page_id']);
-
+        $permalink = jem_sf_get_product_page_permalink($options['product_page_id']); 
+        
         //trim leading /
         $permalink = substr($permalink, 1);
-
+        
         //trim trailing /
         $permalink = substr_replace($permalink ,"",-1);
-
-        $redirect_url = 'index.php?pagename=' . $permalink . '&sfpid=$matches[1]&sfProdName=$matches[2]';
+        
+        $redirect_url = 'index.php?pagename=' . $permalink . '&sfpid=$matches[1]&sfProdName=$matches[2]';            
         add_rewrite_tag('%sfpid%','([^&]+)');
         add_rewrite_tag('%sfProdName%','([^&]+)');
         add_rewrite_rule($permalink . '/([^/]*)/([^/]*)/?', $redirect_url, 'top');
+    }
+    
+    if ($_GET['pp_activate'])
+    {
+        flush_rewrite_rules();
     }
 }
 
@@ -185,7 +190,7 @@ function jem_sf_redirect_to_product_page() {
                 $product_name = $re[2];
             }
         }
-
+        
         $post_values = array();
         $post_values['identifier'] = $lookup_id;
         $post_values['name'] = $product_name;
@@ -199,36 +204,36 @@ function jem_sf_redirect_to_product_page() {
             $options = get_option('jem_sf_options');
             $redirect_url = get_home_url(null, jem_sf_get_product_page_permalink($options['product_page_id']) . $product_page_id . '/' . $product_name);
             wp_redirect($redirect_url, 301);
-        }
+        }                        
         die();
     }
 }
 
-function jem_sf_filter_permalink($permalink) {
+function jem_sf_filter_permalink($permalink) {  
     $product_page_id = get_query_var( 'sfpid' );
     $product_name = get_query_var( 'sfProdName' );
-    if ($product_page_id)
-    {
-        $options = get_option( 'jem_sf_options' );
+    if ($product_page_id) 
+    {        
+        $options = get_option( 'jem_sf_options' );    
         $product_page_link = jem_sf_get_product_page_permalink($options['product_page_id']);
         $replace_url = $product_page_link . $product_page_id . '/' . $product_name;
         $permalink = str_replace($permalink, $product_page_link, $replace_url);
     }
-    return $permalink;
+    return $permalink;    
 }
 /*
  * Sets the product page being viewed. Done early so that
- * we can set the title of the page and the H1 based
+ * we can set the title of the page and the H1 based 
  * on its content.
  */
 function jem_sf_set_product_page_variable() {
-
+    
     $product_page_id = get_query_var( 'sfpid' );
     $post_values = array();
     global $jem_sf_product_page;
     $post_values['productPageId'] = $product_page_id;
     $result = jem_sf_api_call('GetProductPageData', $post_values);
-    $jem_sf_product_page = $result->Data;
+    $jem_sf_product_page = $result->Data;    
 }
 
 /*
@@ -245,8 +250,8 @@ function jem_sf_add_query_var($vars) {
 /*
  * Changes the name of the product page's H1 tag
  */
-function jem_sf_get_product_page_title() {
-    global $jem_sf_product_page;
+function jem_sf_get_product_page_title() {    
+    global $jem_sf_product_page;    
     $num_args = func_num_args();
     if (num_args < 2)
     {
@@ -262,55 +267,55 @@ function jem_sf_get_product_page_title() {
         }
         return "";
     }
-
-    $title = func_get_arg(0);
+    
+    $title = func_get_arg(0);    
     $id = func_get_arg(1);
-
+    
     $options = get_option('jem_sf_options');
     $product_page_id = $options['product_page_id'];
-
-    if ($jem_sf_product_page == null || $id != $product_page_id) {
+    
+    if ($jem_sf_product_page == null || $id != $product_page_id) {        
         return $title;
-    }
+    }   
 
-    return $jem_sf_product_page->MainProduct->Name;
+    return $jem_sf_product_page->MainProduct->Name;    
 }
 
 /*
  * Sets the page title to contain the name of the product
  */
-function jem_sf_add_product_page_title_tag() {
-
+function jem_sf_add_product_page_title_tag() {    
+    
     global $jem_sf_product_page;
     if (func_num_args() < 3)
     {
         if ($jem_sf_product_page != null) {
             return html_entity_decode($jem_sf_product_page->MainProduct->Name);
-        }
+        }   
         else if (func_num_args() > 0) {
             return func_get_arg(0);
-        }
+        }            
         return "";
-    }
-
-    $title = func_get_arg(0);
+    }    
+    
+    $title = func_get_arg(0);    
     $sep = func_get_arg(1);
     $seplocation = func_get_arg(2);
-
+    
     if ($jem_sf_product_page == null) {
         return $title;
     }
-
+        
     // account for $seplocation
     $left_sep = ( $seplocation != 'right' ? ' ' . $sep . ' ' : '' );
-    $right_sep = ( $seplocation != 'right' ? '' : ' ' . $sep . ' ' );
-
-
+    $right_sep = ( $seplocation != 'right' ? '' : ' ' . $sep . ' ' );   
+    
+    
     return $left_sep . html_entity_decode($jem_sf_product_page->MainProduct->Name) . $right_sep;
 }
 
 /*
- * Removes the SellFire product page from appearing in the list generated
+ * Removes the SellFire product page from appearing in the list generated 
  * by wp_list_pages
  */
 function jem_sf_filter_product_page_from_list($excluded_ids) {
@@ -320,24 +325,24 @@ function jem_sf_filter_product_page_from_list($excluded_ids) {
     {
         return $excluded_ids;
     }
-
+    
     $excluded_ids[] = $options['product_page_id'];
     return $excluded_ids;
 }
 
 function jem_sf_get_and_validate_product_page($options) {
-
+    
     $product_page_id = $options['product_page_id'];
-
+    
     if ($product_page_id != null && $product_page_id != '')
     {
-        $post = get_post($product_page_id);
+        $post = get_post($product_page_id);        
         if (!$post || $post->post_status != 'publish')
         {
             $product_page_id = null;
         }
     }
-
+    
     return $product_page_id;
 }
 
@@ -345,32 +350,32 @@ function jem_sf_get_and_validate_product_page($options) {
  * Creates a page that will serve as the product page
  * for this blog. This page should not be deleted
  */
-function jem_sf_create_product_page($options) {
-
+function jem_sf_create_product_page(&$options) {
+    
     $product_page_id = $options['product_page_id'];
-
+    
     if ($product_page_id != null && $product_page_id != '')
     {
-        $post = get_post($product_page_id);
+        $post = get_post($product_page_id);        
         if (!$post || $post->post_status != 'publish')
         {
             $product_page_id = null;
         }
     }
-
+    
     if ($product_page_id == null || $product_page_id == '')
     {
-        $user = wp_get_current_user();
+        $user = wp_get_current_user();                          
         $post = array();
         $post['post_author'] = $user->ID;
         $post['post_content'] = '[sellfirepp]';
         $post['post_name'] = 'product';
         $post['post_status'] = 'publish';
         $post['post_title'] = 'SellFire Product Page - Do Not Delete';
-        $post['post_type'] = 'page';
+        $post['post_type'] = 'page';                    
         $product_page_id = wp_insert_post($post);
-    }
-
+    }    
+    
     $options['product_page_id'] = $product_page_id;
     return $product_page_id;
 }
@@ -378,7 +383,7 @@ function jem_sf_create_product_page($options) {
 /*
  * Replaces the sellfire shortcode with store contents
  */
-function jem_sf_sellfire_shortcode($attr) {
+function jem_sf_sellfire_shortcode($attr) {        
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
     if (!$store_content || current_user_can('edit_posts'))
     {
@@ -387,16 +392,16 @@ function jem_sf_sellfire_shortcode($attr) {
         if ($options['product_page_id'])
         {
             $product_page_root = get_home_url(null, 'sf-product-lookup');
-        }
+        }        
         $sf_url = JEM_SF_DOMAIN . '/StoreDisplay/EmbeddedStore?ppRoot=' . urlencode($product_page_root) . '&wpMode=true&logImpression=false&storeId=' . $attr["id"] . '&wpPluginVersion=' . JEM_SF_VERSION;
         $response = wp_remote_get($sf_url, jem_sf_get_default_http_args());
-        if (is_wp_error($response) || wp_remote_retrieve_response_code(&$response) != 200)
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) != 200)
         {
             return '';
         }
-        $store_content = wp_remote_retrieve_body(&$response);
+        $store_content = wp_remote_retrieve_body($response);
         set_transient(jem_sf_sellfire_transient_code($attr["id"]), $store_content, 300);
-    }
+    }             
     return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);
 }
 
@@ -414,18 +419,18 @@ function jem_sf_get_default_http_args() {
 
 
 /*
- * Outputs store content. Handles with to directly echo it or use it
+ * Outputs store content. Handles with to directly echo it or use it 
  * as a normal short code
  */
 function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_echo) {
-
+    
     if ($direct_echo || $_GET['sfecho'] == '1')
     {
-        echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none' class='sf-temp-store-holder'/>" . $store_content . "</div>";
+        echo "<div id='divSfStoreTemp" . $store_id . "' style='display: none' class='sf-temp-store-holder'/>" . $store_content . "</div>";        
         return "<div id='divSfStore" . $store_id . "'></div>";
     }
-    else
-    {
+    else        
+    {       
         return $store_content;
     }
 }
@@ -454,34 +459,34 @@ function jem_sf_sellfire_quick_shortcode($attr) {
             $url .= '&' . urlencode($key) . "=" . urlencode($value);
         }
         $response = wp_remote_get($url, jem_sf_get_default_http_args());
-        if (is_wp_error($response) || wp_remote_retrieve_response_code(&$response) != 200)
+        if (is_wp_error($response) || wp_remote_retrieve_response_code($response) != 200)
         {
             return '';
         }
 
-        $store_content = wp_remote_retrieve_body(&$response);
+        $store_content = wp_remote_retrieve_body($response);
         set_transient($transientCode, $store_content, 300);
     }
     $jemSfShortCodeSequence++;
     $options = get_option( 'jem_sf_options' );
-    return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);
+    return jem_sf_output_store_for_shortcode($store_content, $attr["id"], $options['direct_echo']);    
 }
 
 /*
  * Replaces the product page short code with the content from
  * a product page identifier given in the URL
  */
-function jem_sf_sellfire_product_page_shortcode($attr) {
-    global $jem_sf_product_page;
+function jem_sf_sellfire_product_page_shortcode($attr) {    
+    global $jem_sf_product_page;    
     if ($jem_sf_product_page == null)
     {
         return "";
     }
     include('includes/product-page.php');
-    $productPageText = jem_sf_renderProductPage($jem_sf_product_page);
+    $productPageText = jem_sf_renderProductPage($jem_sf_product_page);    
     $options = get_option( 'jem_sf_options' );
     $direct_echo = $options['direct_echo'];
-    return jem_sf_output_store_for_shortcode($productPageText, 'SfProductPage', $direct_echo);
+    return jem_sf_output_store_for_shortcode($productPageText, 'SfProductPage', $direct_echo);    
 }
 
 /*
@@ -524,7 +529,7 @@ function jem_sf_add_menus() {
     add_submenu_page ('jem_sf_sellfire', 'Store Widgets', 'Widgets', 'manage_options', 'jem_sf_sellfire_widgets', 'jem_sf_widgets' );
     add_submenu_page ('jem_sf_sellfire', 'Store Themes', 'Themes', 'manage_options', 'jem_sf_sellfire_theme', 'jem_sf_store_theme' );
     add_submenu_page ('jem_sf_sellfire', 'Settings', 'Settings', 'manage_options', 'jem_sf_sellfire_settings', 'jem_sf_settings' );
-    add_submenu_page ('jem_sf_sellfire', 'Product Page Settings', 'Product Pages', 'manage_options', 'jem_sf_sellfire_product_pages', 'jem_sf_product_pages' );
+    add_submenu_page ('jem_sf_sellfire', 'Product Page Settings', 'Product Pages', 'manage_options', 'jem_sf_sellfire_product_pages', 'jem_sf_product_pages' );    
     add_submenu_page (null, 'Create Store', 'Create Store', 'manage_options', 'jem_sf_sellfire_create_store', 'jem_sf_create_store' );
 }
 
@@ -544,9 +549,9 @@ function jem_sf_add_scripts() {
     wp_enqueue_style( 'jem_sf_cssscript', JEM_SF_INSERTCSS . '/sellfire.css?sfversion=' . JEM_SF_VERSION );
 }
 
-function jem_sf_add_blog_scripts() {
-    if (get_query_var( 'sfpid' ))
-    {
+function jem_sf_add_blog_scripts() {    
+    if (get_query_var( 'sfpid' )) 
+    {        
         wp_enqueue_style( 'jem_sf_productcssscript', JEM_SF_INSERTCSS . '/sellfire-product-page.css?sfversion=' . JEM_SF_VERSION );
     }
     wp_enqueue_script( 'jquery' );
@@ -570,7 +575,6 @@ function jem_sf_store_theme() {
  * Draws the settings page
  */
 function jem_sf_settings() {
-    jem_sf_getSiteId(null);
     include('includes/general-settings.php');
 }
 
@@ -610,7 +614,7 @@ function jem_sf_merchants() {
 /*
  * Draws the merchants page
  */
-function jem_sf_site_overview() {
+function jem_sf_site_overview() {      
     $url = '/WordPress/SiteOverview';
     include('includes/options-page.php');
 }
@@ -618,13 +622,13 @@ function jem_sf_site_overview() {
 /*
  * Creates a new SellFire account if needed
  */
-function jem_sf_getSiteId($options) {
+function jem_sf_getSiteId(&$options) {
     //delete_option('jem_sf_options');
     //jem_sf_initialize_options();
     if ($options == null)
     {
         $options = get_option( 'jem_sf_options' );
-    }
+    }           
     $siteId = null;
     if ($options == null) {
         $options = array();
@@ -649,12 +653,12 @@ function jem_sf_getSiteId($options) {
         $post_values['apiKey'] = $options['api_key'] == null ? '' : $options['api_key'];
         $params = array('sslverify' => false, 'body' => $post_values, 'timeout' => 10, 'method' => post, 'blocking' => true, 'httpversion' => 1.0, 'redirection' => 5);
         $response = wp_remote_post($url, $params);
-        $result = json_decode( wp_remote_retrieve_body(&$response) );
+        $result = json_decode( wp_remote_retrieve_body($response) );
         if ($result->ErrorMessage)
         {
             return array(
-                "Success"=>false,
-                "ErrorMessage"=>$result->ErrorMessage);
+                "Success"=>false, 
+                "ErrorMessage"=>$result->ErrorMessage);            
         }
         $options['api_key'] = $result->ApiKey;
         $options['site_id'] = $result->SiteId;
@@ -698,8 +702,8 @@ function jem_sf_validate_api_key( $api_key ) {
     $post_values['apiKey'] = $api_key;
     $params = array('sslverify' => false, 'body' => $post_values);
     $response = wp_remote_post($url, $params);
-    $content = wp_remote_retrieve_body(&$response);
-    return $content == "true";
+    $content = wp_remote_retrieve_body($response);
+    return $content == "true";        
 }
 
 /*
@@ -786,8 +790,8 @@ function jem_sf_api_call( $api_operation, $post_values ) {
     $response = wp_remote_post(
             JEM_SF_API_URL . $api_operation,
             array ( 'body' => $post_values, "sslverify" => false, 'timeout' => 20) );
-
-    return json_decode( wp_remote_retrieve_body(&$response) );
+    
+    return json_decode( wp_remote_retrieve_body($response) );
 }
 
 /*

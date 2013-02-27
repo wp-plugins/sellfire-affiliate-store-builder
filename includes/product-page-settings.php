@@ -1,14 +1,15 @@
 <h2>Product Page Settings</h2>
 <?php 
     $response = jem_sf_api_call('GetCustomerFeatures', null);
-    $features = $response->Data;    
-    $product_pages_enabled =  $features && $features->ProductPages;       
+    $features = $response->Data;
+    
+    $product_pages_enabled =  $features && $features->ProductPages;
     
     $options = get_option('jem_sf_options');
 
-    if (jem_sf_initialize_product_page_default(&$options))
+    if (jem_sf_initialize_product_page_default($options))
     {
-        jem_sf_create_product_page(&$options);        
+        jem_sf_create_product_page($options);        
         update_option('jem_sf_options', $options);
     }
     $product_page_activated = true;
@@ -17,15 +18,15 @@
     {
         $product_page_activated = false;
     } 
-    else if (jem_sf_initialize_product_page_default(&$options))
+    else if (jem_sf_initialize_product_page_default($options))
     {
         update_option('jem_sf_options', $options);
     }
     
     if ($_GET['pp_activate'] && !$product_page_activated && $product_pages_enabled)
     {
-        jem_sf_create_product_page(&$options);        
-        jem_sf_initialize_product_page_default(&$options);
+        jem_sf_create_product_page($options);        
+        jem_sf_initialize_product_page_default($options);
         update_option('jem_sf_options', $options);
         $product_page_activated = true;
     }
