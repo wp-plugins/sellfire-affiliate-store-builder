@@ -1,6 +1,6 @@
     <?php
         $options = get_option( 'jem_sf_options' );
-        jem_sf_getSiteId(&$options);
+        jem_sf_getSiteId($options);
         $siteId = $options['site_id'];
         $apiKey = $options['api_key'];
         if (strrpos($url, '?'))
@@ -50,7 +50,10 @@
                     the error information below in your message:
                 </p>                            
                 <pre>
-                    <?php echo print_r($reponse) ?>
+                    <?php 
+                    $response = wp_remote_get('http://www.sellfire.com' );
+                    echo print_r($response); 
+                    ?>
                 </pre>
             <?php
             }
