@@ -3,6 +3,15 @@
     border: solid 1px #E7E7E7;
 }
 
+.sfpp-outer-container tr
+{
+  border: none;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+}
+
 #sfpp-cross-sells tr td
 {
     border: none;

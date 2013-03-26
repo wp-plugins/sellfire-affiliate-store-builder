@@ -111,7 +111,7 @@
             $new_window = $options['pp_new_window'];
             $targetText = $new_window ? " target='_BLANK'" : "";
 
-            $pageText = '<div id="divSfProductPage">    
+            $pageText = '<div id="divSfProductPage" class="sfpp-outer-container">    
             <table cellspacing="0" cellpadding="0" border="0" style="border: none; vertical-align: top; padding-top: 10px; padding-bottom: 10px" class="sfpp-product-overview">
                 <tr>
                     <td style="padding-right: 20px; border: none; vertical-align: top; min-width: ' .  $image_width . 'px">

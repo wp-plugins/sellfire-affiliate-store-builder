@@ -4,7 +4,7 @@ Donate link: http://www.sellfire.com/
 Tags: affiliate marketing affiliate, data feed, commission junction, cj, gan, amazon associates, coupons, popshops, affiliate window, avantlink, pepperjam, linkshare, datafeed, affiliate deals, google affiliate network, datafeedr, premiumpress, couponpress, amazon, woocommerce, shopperpress, premiumpress, couponpress
 Requires at least: 3.0
 Tested up to: 3.5
-Stable tag: 2.9
+Stable tag: 3.0
 
 SellFire's Affiliate Store Builder makes it easy to earn money as an affiliate. Integrated with the biggest networks and thousands of merchants.
 
@@ -107,3 +107,9 @@ one will be created for you automatically.
 * Launched importing to WooCommerce
 * Launched importing to PremiumPress themes ShopperPress and CouponPress
 * Updates and fixes for the product pages feature
+
+= 3.0 =
+* Added support for Yoast
+* Fixed issue where plug-in can crash on the settings page
+* Fixed issue with the compatibility setting not working under certain circumstances
+* Fixed issue with product page redirects not working

@@ -25,7 +25,7 @@
             {                
                 $options['site_id'] = '';
                 $options['api_key']= $_GET['api_key'];                
-                $response = jem_sf_getSiteId(&$options);
+                $response = jem_sf_getSiteId($options);
                 if (!$response->Success)
                 {
                     $api_error_message = $response->ErrorMessage;

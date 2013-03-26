@@ -5,7 +5,7 @@
  * Plugin URI: http://www.sellfire.com/Features/AffiliateWordPressPlugin
  * Description: SellFire's store builder allows word press users to easily embed affiliate products,coupons, and deals into their blog.
  * Author: Jason MacInnes
- * Version: 2.9
+ * Version: 3.0
  * Author URI: http://www.jasonmacinnes.com
  * License: GPLv3 (http://www.gnu.org/licenses/gpl-3.0.html)
  */
@@ -57,6 +57,12 @@ add_filter('wp_title', 'jem_sf_add_product_page_title_tag', 10, 3);
 add_filter("wp_list_pages_excludes", "jem_sf_filter_product_page_from_list");
 
 add_filter('the_permalink', 'jem_sf_filter_permalink');
+
+//disable canonical URL tag for Yoast
+add_filter ('wpseo_canonical', 'jem_sf_remove_wpseo_canonical');
+
+//set the product page title correctly for Yoast SEO users
+add_filter ('wpseo_title', 'jem_sf_get_product_page_title');
 
 //register a shortcode
 
@@ -112,6 +118,15 @@ function jem_sf_deactivate() {
     flush_rewrite_rules();
 }
 
+
+/*turns off Yoast on the SellFire product page*/
+function jem_sf_remove_wpseo_canonical ($canonical) {
+     if (jem_sf_is_sellfire_product_page()) {
+         $canonical = false;
+     }
+     return $canonical;
+}
+
 /*
  * Sets up the SellFire options to their initial values
  * and retrieves their API key if they don't have one.
@@ -152,13 +167,21 @@ function jem_sf_add_rules() {
     $options = get_option( 'jem_sf_options' );    
     if ($options['product_page_id'])
     {
+        //this perma link could have additional items added to
+        //it via the custom post structure (like adding .htm)
+        //we need to find a way of removing that
         $permalink = jem_sf_get_product_page_permalink($options['product_page_id']); 
         
-        //trim leading /
-        $permalink = substr($permalink, 1);
-        
+        if (substr($permalink, 0, 1) == '/')
+        {
+           $permalink = substr($permalink, 1);
+        }
+
         //trim trailing /
-        $permalink = substr_replace($permalink ,"",-1);
+        if (substr($permalink, -1) == '/')
+        {
+           $permalink = substr_replace($permalink ,"",-1);
+        }
         
         $redirect_url = 'index.php?pagename=' . $permalink . '&sfpid=$matches[1]&sfProdName=$matches[2]';            
         add_rewrite_tag('%sfpid%','([^&]+)');
@@ -177,18 +200,32 @@ function jem_sf_get_product_page_permalink($product_page_id) {
     return str_replace(parse_url(home_url(), PHP_URL_PATH), "", parse_url($permalink, PHP_URL_PATH));
 }
 
+function jem_sf_is_sellfire_product_page()
+{
+    global $wp_query;
+    $options = get_option( 'jem_sf_options' );    
+    return $options['product_page_id'] && $options['product_page_id'] == $wp_query->post->ID;    
+}
+
 function jem_sf_redirect_to_product_page() {
     if (stripos($_SERVER['REQUEST_URI'], 'sf-product-lookup'))
-    {
+    {        
         $lookup_id = get_query_var( 'sfpid' );
         $product_name = get_query_var( 'sfProdName' );
         if (!$lookup_id || !$product_name) {
+            $re = null;
             preg_match('/sf-product-lookup\/(.*)\/(.*)/', $_SERVER['REQUEST_URI'], $re);
             if ($re && count($re) > 2)
             {
                 $lookup_id = $re[1];
                 $product_name = $re[2];
             }
+        }
+        
+        if (!$lookup_id || !$product_name) {
+            wp_redirect(get_home_url(), 301);
+            die();
+            return;
         }
         
         $post_values = array();
@@ -202,11 +239,19 @@ function jem_sf_redirect_to_product_page() {
         else
         {
             $options = get_option('jem_sf_options');
-            $redirect_url = get_home_url(null, jem_sf_get_product_page_permalink($options['product_page_id']) . $product_page_id . '/' . $product_name);
+            $permalink = jem_sf_get_product_page_permalink($options['product_page_id']);
+            
+            if (substr($permalink, -1) != '/')
+            {
+                $permalink = $permalink . '/';
+            }                   
+            $redirect_url = get_home_url(null, $permalink . $product_page_id . '/' . $product_name);
             wp_redirect($redirect_url, 301);
         }                        
         die();
     }
+    //echo 'left lookup';            
+    //die();
 }
 
 function jem_sf_filter_permalink($permalink) {  
@@ -231,9 +276,16 @@ function jem_sf_set_product_page_variable() {
     $product_page_id = get_query_var( 'sfpid' );
     $post_values = array();
     global $jem_sf_product_page;
-    $post_values['productPageId'] = $product_page_id;
-    $result = jem_sf_api_call('GetProductPageData', $post_values);
-    $jem_sf_product_page = $result->Data;    
+    if ($product_page_id)
+    {
+        $post_values['productPageId'] = $product_page_id;
+        $result = jem_sf_api_call('GetProductPageData', $post_values);
+        $jem_sf_product_page = $result->Data;            
+    }
+    else
+    {
+        $jem_sf_product_page = null;            
+    }    
 }
 
 /*
@@ -385,9 +437,9 @@ function jem_sf_create_product_page(&$options) {
  */
 function jem_sf_sellfire_shortcode($attr) {        
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
+    $options = get_option( 'jem_sf_options' );
     if (!$store_content || current_user_can('edit_posts'))
-    {
-        $options = get_option( 'jem_sf_options' );
+    {        
         $product_page_root = '';
         if ($options['product_page_id'])
         {
@@ -423,6 +475,8 @@ function jem_sf_get_default_http_args() {
  * as a normal short code
  */
 function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_echo) {
+    
+    //$store_content = preg_replace('/\&[a-zA-Z]+\;/', "cruelworld", $store_content);
     
     if ($direct_echo || $_GET['sfecho'] == '1')
     {
@@ -779,14 +833,14 @@ function jem_sf_api_call( $api_operation, $post_values ) {
     if ($post_values == null)
     {
         $post_values = array();
-    }
+    }   
 
     //create array of variables to post
     $sf_options = get_option('jem_sf_options');
 
     $post_values['apiKey'] = $sf_options['api_key'];
     $post_values['siteId'] = $sf_options['site_id'];
-
+        
     $response = wp_remote_post(
             JEM_SF_API_URL . $api_operation,
             array ( 'body' => $post_values, "sslverify" => false, 'timeout' => 20) );

@@ -109,15 +109,23 @@ function jem_sf_import_coupon_from_ad($ad, $storeName)
     $ppArray->merchant_url = $ad->MerchantHomePageUrl;
     $ppArray->affiliate_url = $ad->Url;
     $startDate = jem_sf_parse_json_date($ad->StartDate, 'array');
-    if (intval($startDate[0]) > 2012)
+    if ($startDate && intval($startDate[0]) > 2012)
     {        
         $ppArray->start_date = implode('-', $startDate);
     }
+    else
+    {
+        $ppArray->start_date = null;
+    }    
     $endDate = jem_sf_parse_json_date($ad->EndDate, 'array');
-    if (intval($endDate[0]) > 2012 && intval($endDate) < 2035)
+    if ($endDate && intval($endDate[0]) > 2012 && intval($endDate[0]) < 2035)
     {
         $ppArray->expiry_date = implode('-', $endDate);
     }            
+    else
+    {
+        $ppArray->expiry_date = null;
+    }
     $type = 'Codes';
     if ($ad->CouponCode == null || $ad->CouponCode == '')
     {
@@ -311,7 +319,7 @@ function jem_sf_parse_json_date($date, $type = 'date') {
     }
     else
     {
-        $date = "1970-01-01";
+        return false;
     }
     
     switch($type)
