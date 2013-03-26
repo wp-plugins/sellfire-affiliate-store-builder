@@ -152,13 +152,21 @@ function jem_sf_add_rules() {
     $options = get_option( 'jem_sf_options' );    
     if ($options['product_page_id'])
     {
+        //this perma link could have additional items added to
+        //it via the custom post structure (like adding .htm)
+        //we need to find a way of removing that
         $permalink = jem_sf_get_product_page_permalink($options['product_page_id']); 
         
-        //trim leading /
-        $permalink = substr($permalink, 1);
-        
+        if (substr($permalink, 0, 1) == '/')
+        {
+           $permalink = substr($permalink, 1);
+        }
+
         //trim trailing /
-        $permalink = substr_replace($permalink ,"",-1);
+        if (substr($permalink, -1) == '/')
+        {
+           $permalink = substr_replace($permalink ,"",-1);
+        }
         
         $redirect_url = 'index.php?pagename=' . $permalink . '&sfpid=$matches[1]&sfProdName=$matches[2]';            
         add_rewrite_tag('%sfpid%','([^&]+)');
@@ -202,7 +210,13 @@ function jem_sf_redirect_to_product_page() {
         else
         {
             $options = get_option('jem_sf_options');
-            $redirect_url = get_home_url(null, jem_sf_get_product_page_permalink($options['product_page_id']) . $product_page_id . '/' . $product_name);
+            $permalink = jem_sf_get_product_page_permalink($options['product_page_id']);
+            
+            if (substr($permalink, -1) != '/')
+            {
+                $permalink = $permalink . '/';
+            }                   
+            $redirect_url = get_home_url(null, $permalink . $product_page_id . '/' . $product_name);
             wp_redirect($redirect_url, 301);
         }                        
         die();
@@ -231,9 +245,16 @@ function jem_sf_set_product_page_variable() {
     $product_page_id = get_query_var( 'sfpid' );
     $post_values = array();
     global $jem_sf_product_page;
-    $post_values['productPageId'] = $product_page_id;
-    $result = jem_sf_api_call('GetProductPageData', $post_values);
-    $jem_sf_product_page = $result->Data;    
+    if ($product_page_id)
+    {
+        $post_values['productPageId'] = $product_page_id;
+        $result = jem_sf_api_call('GetProductPageData', $post_values);
+        $jem_sf_product_page = $result->Data;            
+    }
+    else
+    {
+        $jem_sf_product_page = null;            
+    }    
 }
 
 /*
@@ -385,9 +406,9 @@ function jem_sf_create_product_page(&$options) {
  */
 function jem_sf_sellfire_shortcode($attr) {        
     $store_content = get_transient(jem_sf_sellfire_transient_code($attr["id"]));
+    $options = get_option( 'jem_sf_options' );
     if (!$store_content || current_user_can('edit_posts'))
-    {
-        $options = get_option( 'jem_sf_options' );
+    {        
         $product_page_root = '';
         if ($options['product_page_id'])
         {
@@ -423,6 +444,8 @@ function jem_sf_get_default_http_args() {
  * as a normal short code
  */
 function jem_sf_output_store_for_shortcode($store_content, $store_id, $direct_echo) {
+    
+    //$store_content = preg_replace('/\&[a-zA-Z]+\;/', "cruelworld", $store_content);
     
     if ($direct_echo || $_GET['sfecho'] == '1')
     {
